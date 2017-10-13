@@ -1,8 +1,0 @@
-build.bat
-ChangeLog.txt
-hbfmtcls.prg
-hbformat.ini
-hbformat.prg
-hbfuncs.prg
-lista.txt
-ofmt.hbp
