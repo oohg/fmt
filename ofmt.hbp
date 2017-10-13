@@ -1,0 +1,32 @@
+#
+# $Id: ofmt.hbp,v 1.6 2015/03/14 03:32:22 fyurisich Exp $
+#
+
+# output's filename and destination folder
+-o${HG_ROOT}\ofmt
+#-instpath=${HG_ROOT}\
+
+# compilation is incremental (hidden .hmk folder is created)
+-inc
+
+# check all errors
+-w3
+-es2
+
+# other harbour´s flags
+-n -q0 -ko
+
+# uncomment this lines to get detailed build info
+#-trace
+#-info
+
+# linker flags
+# this exe must be statically linked to avoid "missing lib" runtime errors
+-static
+
+# files to compile and link
+hbformat.prg
+hbfmtcls.prg
+hbfuncs.prg
+
+#EOF

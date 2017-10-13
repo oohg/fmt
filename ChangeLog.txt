@@ -1,0 +1,22 @@
+/*
+ * $Id$
+ */
+
+/* Use this format for the entry headers:
+ * YYYY-MM-DD HH:MM UTC[-|+]hhmm Your Name or Username and/or <your_email@address>
+ * For example:
+ * 2002-12-01 23:12 UTC+0100 Foo Bar <foo.bar@foobar.org>
+ */
+
+2017-10-12 22:10 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   + fmt/build.bat
+   + fmt/ChangeLog.txt
+   + fmt/hbfmtcls.prg
+   + fmt/hbformat.ini
+   + fmt/hbformat.prg
+   + fmt/hbfuncs.prg
+   + fmt/lista.txt
+   + fmt/ofmt.hbp
+     ; A source formatter aware of OOHG's syntax.
+       Adapted from Harbour's hbformat contrib.
+       TODO: check if all controls are supported.
