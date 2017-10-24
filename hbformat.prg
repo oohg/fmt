@@ -45,19 +45,19 @@
  */
 
 #include "directry.ch"
-#include "hbver.ch"
 
-ANNOUNCE HB_GTSYS
-REQUEST HB_GT_CGI_DEFAULT
+#ifdef __XHARBOUR__
+   #xtranslate hb_eol() => hb_OsNewLine()
+   #xtranslate hb_ps()  => hb_OsPathSeparator()
+#else
+   ANNOUNCE HB_GTSYS
+   REQUEST HB_GT_CGI_DEFAULT
+#endif
 
 PROCEDURE Main( ... )
 
    LOCAL oRef, aParams, cFileName, cInitDir, i, cParam, lRecursive := .F., cNewCmds, cNewClss
 
-#if 0
-   AltD( 2 )
-   AltD()
-#endif
    aParams := hb_AParams()
 
    IF Empty( aParams ) .OR. Left( cFileName := ATail( aParams ), 1 ) $ "@/-"
@@ -91,18 +91,14 @@ PROCEDURE Main( ... )
       IF ( i := RAt( ".", cFileName ) ) == 0 .OR. SubStr( cFileName, i + 1, 1 ) < "A"
          OutErr( "Wrong mask" + hb_eol() )
       ELSE
-         cInitDir := ;
-            iif( ( i := RAt( "\", cFileName ) ) == 0, ;
-            iif( ( i := RAt( "/", cFileName ) ) == 0, ;
-            "." + hb_ps(), ;
-            Left( cFileName, i ) ), ;
-            Left( cFileName, i ) )
+         cInitDir := iif( ( i := RAt( "\", cFileName ) ) == 0, iif( ( i := RAt( "/", cFileName ) ) == 0, "." + hb_ps(), Left( cFileName, i ) ), Left( cFileName, i ) )
          cFileName := iif( i == 0, cFileName, SubStr( cFileName, i + 1 ) )
          DirEval( cInitDir, cFileName, lRecursive, {| name | Reformat( oRef, name ) } )
       ENDIF
    ELSE
       Reformat( oRef, cFileName )
    ENDIF
+   OutStd( hb_eol() )
 
    RETURN
 
@@ -138,12 +134,12 @@ STATIC PROCEDURE DirEval( cInitDir, cMask, lRecur, bCode )
    LOCAL file
 
    cInitDir := hb_DirSepAdd( cInitDir )
-   cMask := iif( cMask == NIL, hb_osFileMask(), cMask )
+   cMask := iif( cMask == NIL, hb_osFileMask(),  Upper( cMask ) )
 
    FOR EACH file IN Directory( cInitDir + cMask, "HSD" )
       IF "D" $ file[ F_ATTR ]
-         IF ! "." == file[ F_NAME ] .AND. ;
-            ! ".." == file[ F_NAME ] .AND. lRecur
+         IF ! ( "." == file[ F_NAME ] ) .AND. ;
+            ! ( ".." == file[ F_NAME ] ) .AND. lRecur
             DirEval( cInitDir + file[ F_NAME ], cMask, lRecur, bCode )
          ENDIF
       ELSE
@@ -158,19 +154,36 @@ STATIC PROCEDURE DirEval( cInitDir, cMask, lRecur, bCode )
 STATIC PROCEDURE About()
 
    OutStd( ;
-      "OOHG Source Formatter " + HBRawVersion() + hb_eol() + ;
-      "derived from Harbour Source Formatter " + HBRawVersion() + hb_eol() + ;
-      "Copyright (c) 2010-" + ;
-         "2016" + ", " + ;
-         hb_Version( HB_VERSION_URL_BASE ) + hb_eol() + ;
+      "OOHG Source Formatter" + hb_eol() + ;
+      "based on Harbour Source Formatter" + hb_eol() + ;
+      "Copyright (c) 2010-2017, Harbour Project, https://harbour.github.io/" + hb_eol() + ;
       "Copyright (c) 2009, Alexander S.Kresin" + hb_eol() + ;
       hb_eol() )
 
    OutStd( ;
-      "Syntax:  hbformat [options] [@config] <file[s]>" + hb_eol() + ;
+      "Syntax:  ofmt [options] [@config] <file[s]>" + hb_eol() + ;
       hb_eol() )
 
    RETURN
 
-STATIC FUNCTION HBRawVersion()
-   RETURN StrTran( Version(), "Harbour " )
+#ifdef __XHARBOUR__
+
+FUNCTION hb_DirSepAdd( cDir )
+
+   LOCAL cSep := HB_OsPathSeparator()
+
+   IF ! ( Right( cDir, 1 ) == cSep )
+      cDir += cSep
+   ENDIF
+
+   RETURN cDir
+
+FUNCTION hb_DirBase()
+
+   LOCAL cDirBase
+
+   HB_FnameSplit( hb_argv( 0 ), @cDirBase )
+
+   RETURN cDirBase
+
+#endif

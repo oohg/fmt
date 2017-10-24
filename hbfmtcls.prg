@@ -1,3 +1,4 @@
+// TODO: use oohg's standard disclaimer
 /*
  * Harbour source code formatter
  *
@@ -45,8 +46,26 @@
  */
 
 #include "hbclass.ch"
-
 #include "fileio.ch"
+#include "common.ch"
+
+#ifdef __XHARBOUR__
+   #pragma gc0
+
+   #xtranslate hb_eol()                                     =>   hb_OsNewLine()
+   #xtranslate hb_ps()                                      =>   hb_OsPathSeparator()
+   #xtranslate hb_LeftEq( <var>, <char> )                   =>   ( Left( <var>, Len( <char> ) ) == <char> )
+   #xtranslate hb_StrShrink( <char>, <nLen> )               =>   Left( <char>, Len( <char> ) - <nLen> )
+   #xtranslate hb_StrShrink( <char> )                       =>   Left( <char>, Len( <char> ) - 1 )
+   #xtranslate hb_vfExists( <char> )                        =>   hb_FileExists( <char> )
+   #xtranslate hb_AIns( <arr>, <nItem>, <value> )           =>   AIns( <arr>, <nItem> ) ;; <arr>\[ <nItem> \] := <value>
+   #xtranslate hb_At( <subs>, <stroka>, <nPos2> )           =>   At( <subs>, <stroka>, <nPos2> )
+   #xtranslate hb_vfCopyFile( <cFrom>, <cTo> ) == F_ERROR   =>   __CopyFile( <cFrom>, <cTo> ) == .F.
+   #xtranslate hb_DirScan( <cDir>, <cAtt> )                 =>   DirectoryRecurse( <cDir> + <cAtt> )
+   #xtranslate hb_MemoRead( <x> )                           =>   MemoRead( <x> )
+#else
+   #translate  default <var> to <value>                     => hb_default( @<var>, <value> )
+#endif
 
 #define RF_STATE_FUNC   1
 #define RF_STATE_VAR    2
@@ -58,6 +77,13 @@
 //   2. To add a space between "!" operator and its argument
 //      unless it's beginning with a parenthesis:
 //        'IF ! Empty()' and 'IF !( "a" == b )'
+//   1. 'var ++'
+//   2. '- 1' for numeric literals.
+//   3. wrongly breaks line: 'FUNCTION Hello( /* comment */ )'
+//   4. INIT PROCEDURE/EXIT PROCEDURE are not recognized as PROCEDURE statement
+//   5. ".T.," / ".F.," gets wrongly corrected to ".T., " / ".F., "
+//   6. "end class" is converted to "end CLASS" instead of "END CLASS"
+//   7. in PP commands "<var>" should not be converted to "< var >"
 
 CREATE CLASS HBFormatCode
 
@@ -66,6 +92,7 @@ CREATE CLASS HBFormatCode
 
    VAR nEol           INIT  0       // Eol: -1 - no change, 0 - OS default, 1 - DOS, 2 - UNIX
    VAR lFCaseLow      INIT .F.      // If true, convert file name to lower case
+   VAR lNoTabs        INIT .T.      // If true, converts all tabs to spaces
    VAR lIndent        INIT .T.      // If true, indent code
    VAR lCase          INIT .T.      // If true, make case conversion
    VAR lSpaces        INIT .T.      // If true, reformat spaces
@@ -100,15 +127,15 @@ CREATE CLASS HBFormatCode
    VAR cCommands      INIT ","
    VAR cClauses       INIT ","
    VAR cFunctions     INIT ","
-   VAR aContr         INIT { { "if"    , ""        , { "else", "elseif" }   , { "endif" }          }, ;
-                             { "do"    , "while"   , { "" }                 , { "enddo" }          }, ;
-                             { "while" , ""        , { "" }                 , { "enddo" }          }, ;
-                             { "for"   , ""        , { "" }                 , { "next", "endfor" } }, ;
-                             { "do"    , "case"    , { "case", "otherwise" }, { "endcase" }        }, ;
-                             { "with"  , "object"  , { "" }                 , { "end" }            }, ;
-                             { "begin" , "sequence", { "recover", "always" }, { "end" }            }, ;
-                             { "switch", ""        , { "case", "otherwise" }, { "endswitch" }      } }
-
+   VAR aContr         INIT { { "if",     "",         { "else", "elseif" },               { "endif" }          }, ;
+                             { "do",     "while",    { "" },                             { "enddo" }          }, ;
+                             { "while",  "",         { "" },                             { "enddo" }          }, ;
+                             { "for",    "",         { "" },                             { "next", "endfor" } }, ;
+                             { "do",     "case",     { "case", "otherwise" },            { "endcase" }        }, ;
+                             { "with",   "object",   { "" },                             { "end" }            }, ;
+                             { "begin",  "sequence", { "recover", "always" },            { "end" }            }, ;
+                             { "try",    "",         { "catch", "finally" },             { "end" }            }, ;
+                             { "switch", "",         { "case", "otherwise", "default" }, { "endswitch" }      } }
    VAR bCallback
 
    METHOD New( aParams, cIniName, cNewCmds, cNewClss )
@@ -177,6 +204,14 @@ METHOD New( aParams, cIniName, cNewCmds, cNewClss ) CLASS HBFormatCode
    IF ! ",STR," $ Upper( ::cFunctions )
       ::cFunctions += "iif,ISNIL,ISARRAY,ISBLOCK,ISCHARACTER,ISDATE,ISLOGICAL,ISMEMO,ISNUMBER,ISOBJECT,Main"
       __hbformat_BuildListOfFunctions( @::cFunctions, ::cHBXList )
+/*
+TODO: Check againts __hbformat_BuildListOfFunctions()
+      FOR EACH cLine IN hb_ATokens( StrTran( __harbour_hbx(), Chr( 13 ) ), Chr( 10 ) )
+         IF Left( cLine, Len( "DYNAMIC " ) ) == "DYNAMIC "
+            ::cFunctions += "," + SubStr( cLine, Len( "DYNAMIC " ) + 1 )
+         ENDIF
+      NEXT
+*/
    ENDIF
 
    DO CASE
@@ -187,8 +222,23 @@ METHOD New( aParams, cIniName, cNewCmds, cNewClss ) CLASS HBFormatCode
    CASE ::nEol == 0
       ::cEol := hb_eol()
    ENDCASE
+   IF ::lIndent
+      ::lNoTabs := .T.
+   ENDIF
 
    RETURN Self
+
+STATIC FUNCTION __harbour_hbx()
+
+#ifdef __XHARBOUR__
+
+#pragma __streaminclude "hbextern.ch" | RETURN %s
+
+#else
+
+#pragma __streaminclude "harbour.hbx" | RETURN %s
+
+#endif
 
 METHOD Reformat( aFile ) CLASS HBFormatCode
 
@@ -220,7 +270,7 @@ METHOD Reformat( aFile ) CLASS HBFormatCode
          LOOP
       ENDIF
       IF lComment
-         IF ( nPos := hb_At( "*/", aFile[ i ] ) ) > 0
+         IF ( nPos := FindNotQuoted( "*/", aFile[ i ] ) ) > 0
             lComment := .F.
             IF ! Empty( cToken1 := SubStr( aFile[ i ], nPos + 2 ) )
                aFile[ i ] := Left( aFile[ i ], nPos + 1 )
@@ -264,11 +314,23 @@ METHOD Reformat( aFile ) CLASS HBFormatCode
                cLineAll := Left( cLineAll, nPos - 1 ) + Space( ::nSpaceComment ) + LTrim( SubStr( cLineAll, nPos ) )
             ENDIF
          ENDIF
+
          IF ( nPos := FindNotQuoted( "/*", cLineAll ) ) > 0 .AND. ( nPosComment == 0 .OR. nPosComment > nPos )
             nPosComment := nPos
-            IF hb_At( "*/", cLineAll, nPos + 2 ) == 0
+            IF FindNotQuoted( "*/", cLineAll, nPos + 2 ) == 0
                lComment := .T.
             ENDIF
+//
+//          IF ( nPos := FindNotQuoted( "*/", cLineAll, nPos + 2 ) ) != 0
+//             IF ! Empty( cToken1 := SubStr( cLineAll, nPos + 2 ) )
+//                cLineAll := Left( cLineAll, nPos + 1 )
+//                nLen := rf_AINS( aFile, i + 1, cToken1 )
+//                iDelta++
+//             ENDIF
+//          ELSE
+//             lComment := .T.
+//          ENDIF
+//
          ENDIF
          IF nPosComment == 1 .AND. nDeep == 0 .AND. nState == RF_STATE_RET
             nState := 0
@@ -304,7 +366,8 @@ METHOD Reformat( aFile ) CLASS HBFormatCode
                   cToken2 := Lower( hb_tokenGet( cLine, 2 ) )
                   IF hb_LeftEq( cToken1, "#" )
                   ELSEIF nLenToken >= 4 .AND. ( ;
-                        ( hb_LeftEq( "static", cToken1 ) .AND. ( hb_LeftEq( "function", cToken2 ) .OR. hb_LeftEq( "procedure", cToken2 ) ) ) .OR. ;
+                        ( hb_LeftEq( "static", cToken1 ) .AND. ;
+                        ( hb_LeftEq( "function", cToken2 ) .OR. hb_LeftEq( "procedure", cToken2 ) ) ) .OR. ;
                         ( Len( cToken2 ) >= 4 .AND. hb_LeftEq( "procedure", cToken2 ) .AND. ( "init" == cToken1 .OR. "exit" == cToken1 ) ) .OR. ;
                         hb_LeftEq( "function", cToken1 ) .OR. ;
                         hb_LeftEq( "procedure", cToken1 ) .OR. ;
@@ -390,9 +453,15 @@ METHOD Reformat( aFile ) CLASS HBFormatCode
                      IF hb_LeftEq( cLine, "#" ) .AND. ! ::lIndDrt
                         nIndent := 0
                      ENDIF
+/*
+TODO: Check
+                     IF Left( cLine, 2 ) == "//" .AND. nDeep == 0
+                        nIndent := 0
+                     ENDIF
+*/
                      cLineAll := Space( nIndent ) + ::FormatLine( cLine )
                      IF i > 1 .AND. ( ( nState == RF_STATE_RET .AND. ::nLineRet > 0 .AND. nStatePrev != RF_STATE_FUNC ) .OR. ;
-                                      ( nState == RF_STATE_FUNC .AND. ::nLineFnc > 0 .AND. nStatePrev > 0 ) .OR. ;
+                                      ( nState == RF_STATE_FUNC .AND. ::nLineFnc > 0 /* .AND. nStatePrev > 0 */ ) .OR. ;
                                       ( nState == RF_STATE_VAR .AND. nStatePrev != nState .AND. ::nLineVar > 0 ) .OR. ;
                                       ( nState == RF_STATE_CODE .AND. nStatePrev != nState .AND. ::nLineCode > 0 ) )
                         nPos := i - 1
@@ -466,7 +535,8 @@ METHOD FormatLine( cLine, lContinued ) CLASS HBFormatCode
       RETURN cLine
    ENDIF
 
-   hb_default( @lContinued, .F. )
+   default lContinued to .F.
+
    lFirst := ! lContinued
 
    nLen := Len( cLine )
@@ -683,7 +753,7 @@ METHOD ConvertCmd( cLine, nBegin, nEnd, lFirstOnly ) CLASS HBFormatCode
             RETURN .F.
          ENDIF
 
-         hb_default( @lFirstOnly, .F. )
+         default lFirstOnly to .F.
 
          cToken := Upper( SubStr( cLine, nBegin, nEnd - nBegin ) )
 
@@ -717,8 +787,7 @@ METHOD ConvertFnc( cLine, nBegin, nEnd ) CLASS HBFormatCode
 
       cToken := Upper( SubStr( cLine, nBegin, nEnd - nBegin ) )
 
-      IF ( nPos := hb_AtI( "," + cToken + ",", ::cFunctions ) ) > 0
-
+      IF ( nPos := At( "," + cToken + ",", Upper( ::cFunctions ) ) ) > 0
          IF ::nCaseFnc > 1
             nPos++
             cToken := iif( ::nCaseFnc == 2, Lower( cToken ), iif( ::nCaseFnc == 3, ;
@@ -778,7 +847,7 @@ METHOD SetOption( cLine, i, aIni ) CLASS HBFormatCode
             xRes := ""
          ELSEIF IsDigit( cToken2 ) .OR. ( hb_LeftEq( cToken2, "-" ) .AND. IsDigit( LTrim( SubStr( cToken2, 2 ) ) ) )
             xRes := Val( cToken2 )
-         ELSE
+         ELSEIF IsAlpha( cToken2 )
             cTemp := Upper( cToken2 )
             IF cTemp == "ON" .OR. cTemp == "YES"
                xRes := .T.
@@ -799,6 +868,8 @@ METHOD SetOption( cLine, i, aIni ) CLASS HBFormatCode
                   xRes := cToken2
                ENDIF
             ENDIF
+         ELSE
+            ::nErr := 3
          ENDIF
          IF ::nErr == 0 .AND. !( ValType( xRes ) == Left( cToken1, 1 ) )
             ::nErr := 4
@@ -823,7 +894,7 @@ METHOD ReadIni( cIniName ) CLASS HBFormatCode
    LOCAL i, nLen, aIni, c
 
    IF hb_vfExists( cIniName )
-      aIni := hb_ATokens( MemoRead( cIniName ), .T. )
+      aIni := hb_ATokens( StrTran( MemoRead( cIniName ), Chr( 13 ) + Chr( 10 ), Chr( 10 ) ), Chr( 10 ) )
       nLen := Len( aIni )
       FOR i := 1 TO nLen
          IF ! HB_ISNULL( aIni[ i ] := AllTrim( aIni[ i ] ) ) .AND. ;
@@ -839,6 +910,8 @@ METHOD ReadIni( cIniName ) CLASS HBFormatCode
 
 METHOD Source2Array( cSource ) CLASS HBFormatCode
 
+   LOCAL aTokens := hb_ATokens( StrTran( cSource, Chr( 13 ) + Chr( 10 ), Chr( 10 ) ), Chr( 10 ) )
+
    IF ::nEol < 0
       IF Chr( 13 ) + Chr( 10 ) $ cSource
          ::cEol := Chr( 13 ) + Chr( 10 )
@@ -847,7 +920,7 @@ METHOD Source2Array( cSource ) CLASS HBFormatCode
       ENDIF
    ENDIF
 
-   RETURN hb_ATokens( cSource, .T. )
+   RETURN aTokens
 
 METHOD Array2Source( aSource ) CLASS HBFormatCode
 
@@ -879,20 +952,22 @@ METHOD File2Array( cFileName ) CLASS HBFormatCode
 
 METHOD Array2File( cFileName, aSource ) CLASS HBFormatCode
 
-   LOCAL cDir, cName, cExt
+   LOCAL cName, i, cBakName, cPath
 
-   IF HB_ISNULL( ::cExtSave ) .AND. ;
-      hb_vfCopyFile( cFileName, hb_FNameExtSet( cFileName, ::cExtBack ) ) == F_ERROR
-      RETURN .F.
+   cName := iif( ( i := RAt( ".", cFileName ) ) == 0, cFileName, SubStr( cFileName, 1, i - 1 ) )
+   IF HB_ISNULL( ::cExtSave )
+      cBakName := cName + iif( Left( ::cExtBack, 1 ) == ".", "", "." ) + ::cExtBack
+      IF ( hb_vfCopyFile( cFileName, cBakName ) == F_ERROR )
+         RETURN .F.
+      ENDIF
    ENDIF
 
    IF ! HB_ISNULL( ::cExtSave )
-      cFileName := hb_FNameExtSet( cFileName, ::cExtSave )
+      cFileName := cName + iif( Left( ::cExtSave, 1 ) == ".", "", "." ) + ::cExtSave
    ENDIF
-
    IF ::lFCaseLow
-      hb_FNameSplit( cFileName, @cDir, @cName, @cExt )
-      cFileName := hb_FNameMerge( cDir, Lower( cName ), Lower( cExt ) )
+      cPath := iif( ( i := RAt( '\', cFileName ) ) == 0, iif( ( i := RAt( "/", cFileName ) ) == 0, "", Left( cFileName, i ) ), Left( cFileName, i ) )
+      cFileName := cPath + Lower( iif( i == 0, cFileName, SubStr( cFileName, i + 1 ) ) )
    ENDIF
 
    RETURN hb_MemoWrit( cFileName, ::Array2Source( aSource ) )
@@ -916,7 +991,7 @@ STATIC FUNCTION FindNotQuoted( subs, stroka, nPos2 )
 
    LOCAL nPos1, i, c, nState := 0, cSymb
 
-   hb_default( @nPos2, 1 )
+   default nPos2 to 1
 
    DO WHILE .T.
       IF ( nPos1 := hb_At( subs, stroka, nPos2 ) ) == 0
@@ -942,3 +1017,60 @@ STATIC FUNCTION FindNotQuoted( subs, stroka, nPos2 )
    ENDDO
 
    RETURN nPos1
+
+#include "directry.ch"
+
+PROCEDURE __hbformat_BuildListOfFunctions( /* @ */ cFunctions, cHBXList )
+
+   LOCAL aFile
+   LOCAL cName
+   LOCAL lContribHBR := .F.
+
+   /* from built-in core .hbx file */
+   HBXToFuncList( @cFunctions, __harbour_hbx() )
+
+   /* from .hbr container files */
+   FOR EACH aFile IN Directory( hb_DirBase() + "*.hbr" )
+      IF hb_FileMatch( hb_FNameName( aFile[ F_NAME ] ), "contrib" )
+         lContribHBR := .T.
+      ENDIF
+      FOR EACH cName IN hb_Deserialize( hb_ZUncompress( hb_MemoRead( hb_DirBase() + aFile[ F_NAME ] ) ) )
+         cFunctions += "," + cName:__enumKey()
+      NEXT
+   NEXT
+
+   /* from standalone .hbx files in some known locations */
+   IF ! lContribHBR
+      WalkDir( hb_DirBase() + ".." + hb_ps() + "contrib", @cFunctions )
+   ENDIF
+   WalkDir( hb_DirBase() + ".." + hb_ps() + "addons", @cFunctions )
+
+   /* from specified list of .hbx files */
+   FOR EACH cName IN hb_ATokens( cHBXList )
+      HBXToFuncList( @cFunctions, hb_MemoRead( hb_PathJoin( hb_DirBase(), cName ) ) )
+   NEXT
+
+   RETURN
+
+STATIC PROCEDURE WalkDir( cDir, /* @ */ cFunctions )
+
+   LOCAL aFile
+
+   cDir := hb_DirSepAdd( cDir )
+
+   FOR EACH aFile IN hb_DirScan( cDir, "*.hbx" )
+      HBXToFuncList( @cFunctions, hb_MemoRead( cDir + aFile[ F_NAME ] ) )
+   NEXT
+
+   RETURN
+
+STATIC PROCEDURE HBXToFuncList( /* @ */ cFunctions, cHBX )
+   LOCAL cLine
+
+   FOR EACH cLine IN hb_ATokens( StrTran( cHBX, Chr( 13 ) ), Chr( 10 ) )
+      IF Left( cLine, Len( "DYNAMIC " ) ) == "DYNAMIC "
+         cFunctions += "," + SubStr( cLine, Len( "DYNAMIC " ) + 1 )
+      ENDIF
+   NEXT
+
+   RETURN
