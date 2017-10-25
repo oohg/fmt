@@ -8,6 +8,10 @@
  * 2002-12-01 23:12 UTC+0100 Foo Bar <foo.bar@foobar.org>
  */
 
+2017-10-25 19:44 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * fmt/ofmt.hbp
+     * Incremental compilation is now enabled.
+
 2017-10-23 22:28 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * fmt/.gitignore
      + Added more files.

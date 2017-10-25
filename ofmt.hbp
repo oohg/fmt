@@ -6,7 +6,7 @@
 -oofmt
 
 # compilation is incremental (hidden .hmk folder is created)
--inc-
+-inc
 
 # check all errors
 -w3
