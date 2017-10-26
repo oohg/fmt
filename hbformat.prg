@@ -47,8 +47,7 @@
 #include "directry.ch"
 
 #ifdef __XHARBOUR__
-   #xtranslate hb_eol() => hb_OsNewLine()
-   #xtranslate hb_ps()  => hb_OsPathSeparator()
+   #xtranslate hb_ps() => hb_OsPathSeparator()
 #else
    ANNOUNCE HB_GTSYS
    REQUEST HB_GT_CGI_DEFAULT
@@ -81,7 +80,7 @@ PROCEDURE Main( ... )
 
    oRef := HBFormatCode():New( aParams, hb_FNameMerge( hb_DirBase(), "hbformat.ini" ), cNewCmds, cNewClss )
    IF oRef:nErr > 0
-      OutStd( "Initialization error", hb_ntos( oRef:nErr ), iif( oRef:nLineErr == 0, "in parameter", "on line " + hb_ntos( oRef:nLineErr ) ), ":", oRef:cLineErr, hb_eol() )
+      OutStd( "Initialization error", hb_ntos( oRef:nErr ), iif( oRef:nLineErr == 0, "in parameter", "on line " + hb_ntos( oRef:nLineErr ) ), ":", oRef:cLineErr, Chr( 13 ) + Chr( 10 ) )
       RETURN
    ENDIF
 
@@ -89,7 +88,7 @@ PROCEDURE Main( ... )
 
    IF "*" $ cFileName
       IF ( i := RAt( ".", cFileName ) ) == 0 .OR. SubStr( cFileName, i + 1, 1 ) < "A"
-         OutErr( "Wrong mask" + hb_eol() )
+         OutErr( "Wrong mask" + Chr( 13 ) + Chr( 10 ) )
       ELSE
          cInitDir := iif( ( i := RAt( "\", cFileName ) ) == 0, iif( ( i := RAt( "/", cFileName ) ) == 0, "." + hb_ps(), Left( cFileName, i ) ), Left( cFileName, i ) )
          cFileName := iif( i == 0, cFileName, SubStr( cFileName, i + 1 ) )
@@ -98,7 +97,7 @@ PROCEDURE Main( ... )
    ELSE
       Reformat( oRef, cFileName )
    ENDIF
-   OutStd( hb_eol() )
+   OutStd( Chr( 13 ) + Chr( 10 ) )
 
    RETURN
 
@@ -115,16 +114,16 @@ STATIC PROCEDURE Reformat( oRef, cFileName )
    LOCAL aFile
 
    IF ! Empty( aFile := oRef:File2Array( cFileName ) )
-      OutStd( "Reformatting " + cFileName + " (" + hb_ntos( Len( aFile ) ) + " lines)" + hb_eol() )
+      OutStd( "Reformatting " + cFileName + " (" + hb_ntos( Len( aFile ) ) + " lines)" + Chr( 13 ) + Chr( 10 ) )
       OutStd( "<" )
       IF oRef:Reformat( aFile )
          oRef:Array2File( cFileName, aFile )
-         OutStd( ">" + hb_eol() )
+         OutStd( ">" + Chr( 13 ) + Chr( 10 ) )
       ELSE
-         OutErr( "Error", oRef:nErr, "on line", oRef:nLineErr, ":", oRef:cLineErr, hb_eol() )
+         OutErr( "Error", oRef:nErr, "on line", oRef:nLineErr, ":", oRef:cLineErr, Chr( 13 ) + Chr( 10 ) )
       ENDIF
    ELSE
-      OutErr( cFileName + " isn't found ..." + hb_eol() )
+      OutErr( cFileName + " isn't found ..." + Chr( 13 ) + Chr( 10 ) )
    ENDIF
 
    RETURN
@@ -154,15 +153,15 @@ STATIC PROCEDURE DirEval( cInitDir, cMask, lRecur, bCode )
 STATIC PROCEDURE About()
 
    OutStd( ;
-      "OOHG Source Formatter" + hb_eol() + ;
-      "based on Harbour Source Formatter" + hb_eol() + ;
-      "Copyright (c) 2010-2017, Harbour Project, https://harbour.github.io/" + hb_eol() + ;
-      "Copyright (c) 2009, Alexander S.Kresin" + hb_eol() + ;
-      hb_eol() )
+      "OOHG Source Formatter" + Chr( 13 ) + Chr( 10 ) + ;
+      "based on Harbour Source Formatter" + Chr( 13 ) + Chr( 10 ) + ;
+      "Copyright (c) 2010-2017, Harbour Project, https://harbour.github.io/" + Chr( 13 ) + Chr( 10 ) + ;
+      "Copyright (c) 2009, Alexander S.Kresin" + Chr( 13 ) + Chr( 10 ) + ;
+      Chr( 13 ) + Chr( 10 ) )
 
    OutStd( ;
-      "Syntax:  ofmt [options] [@config] <file[s]>" + hb_eol() + ;
-      hb_eol() )
+      "Syntax:  ofmt [options] [@config] <file[s]>" + Chr( 13 ) + Chr( 10 ) + ;
+      Chr( 13 ) + Chr( 10 ) )
 
    RETURN
 

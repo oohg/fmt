@@ -52,7 +52,6 @@
 #ifdef __XHARBOUR__
    #pragma gc0
 
-   #xtranslate hb_eol()                                     =>   hb_OsNewLine()
    #xtranslate hb_ps()                                      =>   hb_OsPathSeparator()
    #xtranslate hb_LeftEq( <var>, <char> )                   =>   ( Left( <var>, Len( <char> ) ) == <char> )
    #xtranslate hb_StrShrink( <char>, <nLen> )               =>   Left( <char>, Len( <char> ) - <nLen> )
@@ -220,7 +219,7 @@ TODO: Check againts __hbformat_BuildListOfFunctions()
    CASE ::nEol == 1
       ::cEol := Chr( 13 ) + Chr( 10 )
    CASE ::nEol == 0
-      ::cEol := hb_eol()
+      ::cEol := Chr( 13 ) + Chr( 10 )
    ENDCASE
    IF ::lIndent
       ::lNoTabs := .T.

@@ -8,46 +8,53 @@
  * 2002-12-01 23:12 UTC+0100 Foo Bar <foo.bar@foobar.org>
  */
 
+2017-10-25 22:55 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * fmt\ChangeLog.txt
+     * Updated.
+   * fmt\hbfmtcls.prg
+   * fmt\hbformat.prg
+     * hb_eol() replaced by Chr(13)+Chr(10).
+
 2017-10-25 19:44 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
-   * fmt/ofmt.hbp
+   * fmt\ofmt.hbp
      * Incremental compilation is now enabled.
 
 2017-10-23 22:28 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
-   * fmt/.gitignore
+   * fmt\.gitignore
      + Added more files.
-   * fmt/build.bat
+   * fmt\build.bat
      ! Do not link oohg's libraries.
-   + fmt/compile.bat
+   + fmt\compile.bat
      ; To build with xHarbour and BCC.
-   * fmt/hbfmtcls.prg
+   * fmt\hbfmtcls.prg
      ! Build under xHarbour.
      + Functions from hb_funcs.prg
-   + fmt/hbformat.ini
+   + fmt\hbformat.ini
      * All flags are now enabled.
-   + fmt/hbformat.prg
+   + fmt\hbformat.prg
      ! Build under xHarbour.
-   - fmt/hbfuncs.prg
-   * fmt/ofmt.hbp
+   - fmt\hbfuncs.prg
+   * fmt\ofmt.hbp
      * Some flags removed, others added.
 
 2017-10-17 18:34 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
-   + fmt/README.md
+   + fmt\README.md
 
 2017-10-15 21:20 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
-   + fmt/.gitattributes
+   + fmt\.gitattributes
 
 2017-10-12 22:23 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
-   - fmt/lista.txt
+   - fmt\lista.txt
 
 2017-10-12 22:10 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
-   + fmt/build.bat
-   + fmt/ChangeLog.txt
-   + fmt/hbfmtcls.prg
-   + fmt/hbformat.ini
-   + fmt/hbformat.prg
-   + fmt/hbfuncs.prg
-   + fmt/lista.txt
-   + fmt/ofmt.hbp
+   + fmt\build.bat
+   + fmt\ChangeLog.txt
+   + fmt\hbfmtcls.prg
+   + fmt\hbformat.ini
+   + fmt\hbformat.prg
+   + fmt\hbfuncs.prg
+   + fmt\lista.txt
+   + fmt\ofmt.hbp
      ; A source formatter aware of OOHG's syntax.
        Adapted from Harbour's hbformat contrib.
        TODO: check if all controls are supported.
