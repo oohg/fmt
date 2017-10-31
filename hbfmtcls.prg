@@ -1,9 +1,28 @@
-// TODO: use oohg's standard disclaimer
 /*
- * Harbour source code formatter
+ * $Id: hbfmtcls.prg $
+ */
+/*
+ * ooHG source code:
+ * Formatter for OOHG based source code
  *
- * Copyright 2009 Alexander S.Kresin <alex@belacy.belgorod.su>
+ * Copyright 2017-2017 Fernando Yurisich <fyurisich@oohg.org>
+ * https://oohg.github.io
  *
+ * Adapted from the Harbour and xHarbour source code formatters
+ * Copyright 2009 Alexander S.Kresin
+ * <alex@belacy.belgorod.su>
+ *
+ * Portions of this project are based upon Harbour MiniGUI library.
+ * Copyright 2002-2005 Roberto Lopez <roblez@ciudad.com.ar>
+ *
+ * Portions of this project are based upon Harbour GUI framework for Win32.
+ * Copyright 2001 Alexander S. Kresin <alex@belacy.belgorod.su>
+ * Copyright 2001 Antonio Linares <alinares@fivetech.com>
+ *
+ * Portions of this project are based upon Harbour Project.
+ * Copyright 1999-2017, https://harbour.github.io/
+ */
+/*
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2, or (at your option)
@@ -15,34 +34,33 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; see the file LICENSE.txt.  If not, write to
+ * along with this software; see the file COPYING.  If not, write to
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
- * Boston, MA 02110-1301 USA (or visit https://www.gnu.org/licenses/).
+ * Boston, MA 02110-1335,USA (or download from http://www.gnu.org/licenses/).
  *
- * As a special exception, the Harbour Project gives permission for
- * additional uses of the text contained in its release of Harbour.
+ * As a special exception, the ooHG Project gives permission for
+ * additional uses of the text contained in its release of ooHG.
  *
- * The exception is that, if you link the Harbour libraries with other
+ * The exception is that, if you link the ooHG libraries with other
  * files to produce an executable, this does not by itself cause the
  * resulting executable to be covered by the GNU General Public License.
  * Your use of that executable is in no way restricted on account of
- * linking the Harbour library code into it.
+ * linking the ooHG library code into it.
  *
  * This exception does not however invalidate any other reasons why
  * the executable file might be covered by the GNU General Public License.
  *
- * This exception applies only to the code released by the Harbour
- * Project under the name Harbour.  If you copy code from other
- * Harbour Project or Free Software Foundation releases into a copy of
- * Harbour, as the General Public License permits, the exception does
- * not apply to the code that you add in this way.  To avoid misleading
+ * This exception applies only to the code released by the ooHG
+ * Project under the name ooHG. If you copy code from other
+ * ooHG Project or Free Software Foundation releases into a copy of
+ * ooHG, as the General Public License permits, the exception does
+ * not apply to the code that you add in this way. To avoid misleading
  * anyone as to the status of such modified files, you must delete
  * this exception notice from them.
  *
- * If you write modifications of your own for Harbour, it is your choice
+ * If you write modifications of your own for ooHG, it is your choice
  * whether to permit this exception to apply to your modifications.
  * If you do not wish that, delete this exception notice.
- *
  */
 
 #include "hbclass.ch"
@@ -59,7 +77,6 @@
    #xtranslate hb_vfExists( <char> )                        =>   hb_FileExists( <char> )
    #xtranslate hb_AIns( <arr>, <nItem>, <value> )           =>   AIns( <arr>, <nItem> ) ;; <arr>\[ <nItem> \] := <value>
    #xtranslate hb_At( <subs>, <stroka>, <nPos2> )           =>   At( <subs>, <stroka>, <nPos2> )
-   #xtranslate hb_vfCopyFile( <cFrom>, <cTo> ) == F_ERROR   =>   __CopyFile( <cFrom>, <cTo> ) == .F.
    #xtranslate hb_DirScan( <cDir>, <cAtt> )                 =>   DirectoryRecurse( <cDir> + <cAtt> )
    #xtranslate hb_MemoRead( <x> )                           =>   MemoRead( <x> )
 #else
@@ -203,14 +220,6 @@ METHOD New( aParams, cIniName, cNewCmds, cNewClss ) CLASS HBFormatCode
    IF ! ",STR," $ Upper( ::cFunctions )
       ::cFunctions += "iif,ISNIL,ISARRAY,ISBLOCK,ISCHARACTER,ISDATE,ISLOGICAL,ISMEMO,ISNUMBER,ISOBJECT,Main"
       __hbformat_BuildListOfFunctions( @::cFunctions, ::cHBXList )
-/*
-TODO: Check againts __hbformat_BuildListOfFunctions()
-      FOR EACH cLine IN hb_ATokens( StrTran( __harbour_hbx(), Chr( 13 ) ), Chr( 10 ) )
-         IF Left( cLine, Len( "DYNAMIC " ) ) == "DYNAMIC "
-            ::cFunctions += "," + SubStr( cLine, Len( "DYNAMIC " ) + 1 )
-         ENDIF
-      NEXT
-*/
    ENDIF
 
    DO CASE
@@ -229,15 +238,13 @@ TODO: Check againts __hbformat_BuildListOfFunctions()
 
 STATIC FUNCTION __harbour_hbx()
 
-#ifdef __XHARBOUR__
+   #ifndef __XHARBOUR__
+      #define STREAMINCLUDE #pragma __streaminclude "harbour.hbx" | RETURN %s
+   #else
+      #define STREAMINCLUDE #pragma __streaminclude "hbextern.ch" | RETURN %s
+   #endif
 
-#pragma __streaminclude "hbextern.ch" | RETURN %s
-
-#else
-
-#pragma __streaminclude "harbour.hbx" | RETURN %s
-
-#endif
+   STREAMINCLUDE
 
 METHOD Reformat( aFile ) CLASS HBFormatCode
 
@@ -956,7 +963,7 @@ METHOD Array2File( cFileName, aSource ) CLASS HBFormatCode
    cName := iif( ( i := RAt( ".", cFileName ) ) == 0, cFileName, SubStr( cFileName, 1, i - 1 ) )
    IF HB_ISNULL( ::cExtSave )
       cBakName := cName + iif( Left( ::cExtBack, 1 ) == ".", "", "." ) + ::cExtBack
-      IF ( hb_vfCopyFile( cFileName, cBakName ) == F_ERROR )
+      IF ! __CopyFile( cFileName, cBakName )
          RETURN .F.
       ENDIF
    ENDIF
@@ -1017,58 +1024,29 @@ STATIC FUNCTION FindNotQuoted( subs, stroka, nPos2 )
 
    RETURN nPos1
 
-#include "directry.ch"
-
 PROCEDURE __hbformat_BuildListOfFunctions( /* @ */ cFunctions, cHBXList )
 
-   LOCAL aFile
    LOCAL cName
-   LOCAL lContribHBR := .F.
 
    /* from built-in core .hbx file */
    HBXToFuncList( @cFunctions, __harbour_hbx() )
 
-   /* from .hbr container files */
-   FOR EACH aFile IN Directory( hb_DirBase() + "*.hbr" )
-      IF hb_FileMatch( hb_FNameName( aFile[ F_NAME ] ), "contrib" )
-         lContribHBR := .T.
-      ENDIF
-      FOR EACH cName IN hb_Deserialize( hb_ZUncompress( hb_MemoRead( hb_DirBase() + aFile[ F_NAME ] ) ) )
-         cFunctions += "," + cName:__enumKey()
-      NEXT
-   NEXT
-
-   /* from standalone .hbx files in some known locations */
-   IF ! lContribHBR
-      WalkDir( hb_DirBase() + ".." + hb_ps() + "contrib", @cFunctions )
-   ENDIF
-   WalkDir( hb_DirBase() + ".." + hb_ps() + "addons", @cFunctions )
-
    /* from specified list of .hbx files */
    FOR EACH cName IN hb_ATokens( cHBXList )
-      HBXToFuncList( @cFunctions, hb_MemoRead( hb_PathJoin( hb_DirBase(), cName ) ) )
-   NEXT
-
-   RETURN
-
-STATIC PROCEDURE WalkDir( cDir, /* @ */ cFunctions )
-
-   LOCAL aFile
-
-   cDir := hb_DirSepAdd( cDir )
-
-   FOR EACH aFile IN hb_DirScan( cDir, "*.hbx" )
-      HBXToFuncList( @cFunctions, hb_MemoRead( cDir + aFile[ F_NAME ] ) )
+      HBXToFuncList( @cFunctions, hb_MemoRead( hb_DirBase() + cName ) )
    NEXT
 
    RETURN
 
 STATIC PROCEDURE HBXToFuncList( /* @ */ cFunctions, cHBX )
+
    LOCAL cLine
 
    FOR EACH cLine IN hb_ATokens( StrTran( cHBX, Chr( 13 ) ), Chr( 10 ) )
       IF Left( cLine, Len( "DYNAMIC " ) ) == "DYNAMIC "
          cFunctions += "," + SubStr( cLine, Len( "DYNAMIC " ) + 1 )
+      ELSEIF Left( cLine, Len( "EXTERNAL " ) ) == "EXTERNAL "
+         cFunctions += "," + SubStr( cLine, Len( "EXTERNAL " ) + 1 )
       ENDIF
    NEXT
 
