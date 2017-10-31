@@ -15,12 +15,16 @@
 # other harbour´s flags
 -n -q0
 
+#alerts on exit
+-beep
+-exitstr
+
 # uncomment the following lines to get detailed build info
 #-trace
 #-info
 
-# aditional libs
-xhb.hbc
+# libs
+${HG_ROOT}\oohg.hbc
 
 # files to compile and link
 hbformat.prg

@@ -99,7 +99,7 @@ rem
    copy /b %HG_ROOT%\resources\oohg.rc _temp.rc > nul
    windres -i _temp.rc -o _temp.o
 
-   hbmk2 ofmt %1 %2 %3 %4 %5 %6 %7 %8 %9 >> output.log 2>&1 -run- -prgflag=-q
+   hbmk2 ofmt.hbp %1 %2 %3 %4 %5 %6 %7 %8 %9 >> output.log 2>&1
    if exist output.log type output.log
 
    if exist _oohg_resconfig.h del _oohg_resconfig.h
