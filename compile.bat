@@ -52,8 +52,8 @@ rem
    %HG_HRB%\%BIN_HRB%\harbour hbformat -i%HG_HRB%\include;%HG_ROOT%\include -n1 -w3 -gc0 -es2 -q0
    %HG_HRB%\%BIN_HRB%\harbour hbfmtcls -i%HG_HRB%\include;%HG_ROOT%\include -n1 -w3 -gc0 -es2 -q0
    echo BCC32: Compiling...
-   %HG_BCC%\bin\bcc32 -c -O2 -tW -M -d -a8 -OS -5 -6 -w -I%HG_HRB%\include;%HG_BCC%\include;%HG_ROOT%\include; -L%HG_HRB%\%LIB_HRB%;%HG_BCC%\lib; %HG_DEFXHB% hbformat.c
-   %HG_BCC%\bin\bcc32 -c -O2 -tW -M -d -a8 -OS -5 -6 -w -I%HG_HRB%\include;%HG_BCC%\include;%HG_ROOT%\include; -L%HG_HRB%\%LIB_HRB%;%HG_BCC%\lib; %HG_DEFXHB% hbfmtcls.c
+   %HG_BCC%\bin\bcc32 -c -O2 -tW -M -d -a8 -OS -5 -6 -w -I%HG_HRB%\include;%HG_BCC%\include;%HG_ROOT%\include; -L%HG_HRB%\%LIB_HRB%;%HG_BCC%\lib; %HG_DEFXHB% hbformat.c > nul
+   %HG_BCC%\bin\bcc32 -c -O2 -tW -M -d -a8 -OS -5 -6 -w -I%HG_HRB%\include;%HG_BCC%\include;%HG_ROOT%\include; -L%HG_HRB%\%LIB_HRB%;%HG_BCC%\lib; %HG_DEFXHB% hbfmtcls.c > nul
 
 :LINK
 

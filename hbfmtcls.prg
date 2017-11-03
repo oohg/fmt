@@ -34,7 +34,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this software; see the file COPYING.  If not, write to
+ * along with this software; see the file LICENSE.txt. If not, write to
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1335,USA (or download from http://www.gnu.org/licenses/).
  *
@@ -67,20 +67,18 @@
 #include "fileio.ch"
 #include "common.ch"
 
+#xtranslate hb_LeftEq( <var>, <char> )            => ( Left( <var>, Len( <char> ) ) == <char> )
+
 #ifdef __XHARBOUR__
    #pragma gc0
 
-   #xtranslate hb_ps()                                      =>   hb_OsPathSeparator()
-   #xtranslate hb_LeftEq( <var>, <char> )                   =>   ( Left( <var>, Len( <char> ) ) == <char> )
-   #xtranslate hb_StrShrink( <char>, <nLen> )               =>   Left( <char>, Len( <char> ) - <nLen> )
-   #xtranslate hb_StrShrink( <char> )                       =>   Left( <char>, Len( <char> ) - 1 )
-   #xtranslate hb_vfExists( <char> )                        =>   hb_FileExists( <char> )
-   #xtranslate hb_AIns( <arr>, <nItem>, <value> )           =>   AIns( <arr>, <nItem> ) ;; <arr>\[ <nItem> \] := <value>
-   #xtranslate hb_At( <subs>, <stroka>, <nPos2> )           =>   At( <subs>, <stroka>, <nPos2> )
-   #xtranslate hb_DirScan( <cDir>, <cAtt> )                 =>   DirectoryRecurse( <cDir> + <cAtt> )
-   #xtranslate hb_MemoRead( <x> )                           =>   MemoRead( <x> )
-#else
-   #translate  default <var> to <value>                     => hb_default( @<var>, <value> )
+   #xtranslate hb_ps()                            =>   hb_OsPathSeparator()
+   #xtranslate hb_StrShrink( <char>, <nLen> )     =>   Left( <char>, Len( <char> ) - <nLen> )
+   #xtranslate hb_StrShrink( <char> )             =>   Left( <char>, Len( <char> ) - 1 )
+   #xtranslate hb_AIns( <arr>, <nItem>, <value> ) =>   AIns( <arr>, <nItem> ) ;; <arr>\[ <nItem> \] := <value>
+   #xtranslate hb_At( <subs>, <stroka>, <nPos2> ) =>   At( <subs>, <stroka>, <nPos2> )
+   #xtranslate hb_DirScan( <cDir>, <cAtt> )       =>   DirectoryRecurse( <cDir> + <cAtt> )
+   #xtranslate hb_MemoRead( <x> )                 =>   MemoRead( <x> )
 #endif
 
 #define RF_STATE_FUNC   1
@@ -541,7 +539,9 @@ METHOD FormatLine( cLine, lContinued ) CLASS HBFormatCode
       RETURN cLine
    ENDIF
 
-   default lContinued to .F.
+   IF ! HB_ISLOGICAL( lContinued )
+      lContinued := .F.
+   ENDIF
 
    lFirst := ! lContinued
 
@@ -759,7 +759,9 @@ METHOD ConvertCmd( cLine, nBegin, nEnd, lFirstOnly ) CLASS HBFormatCode
             RETURN .F.
          ENDIF
 
-         default lFirstOnly to .F.
+         IF ! HB_ISLOGICAL( lFirstOnly )
+            lFirstOnly := .F.
+         ENDIF
 
          cToken := Upper( SubStr( cLine, nBegin, nEnd - nBegin ) )
 
@@ -899,7 +901,7 @@ METHOD ReadIni( cIniName ) CLASS HBFormatCode
 
    LOCAL i, nLen, aIni, c
 
-   IF hb_vfExists( cIniName )
+   IF File( cIniName )
       aIni := hb_ATokens( StrTran( MemoRead( cIniName ), Chr( 13 ) + Chr( 10 ), Chr( 10 ) ), Chr( 10 ) )
       nLen := Len( aIni )
       FOR i := 1 TO nLen
@@ -950,7 +952,7 @@ METHOD Array2Source( aSource ) CLASS HBFormatCode
 
 METHOD File2Array( cFileName ) CLASS HBFormatCode
 
-   IF hb_vfExists( cFileName )
+   IF File( cFileName )
       RETURN ::Source2Array( MemoRead( cFileName ) )
    ENDIF
 
@@ -997,7 +999,9 @@ STATIC FUNCTION FindNotQuoted( subs, stroka, nPos2 )
 
    LOCAL nPos1, i, c, nState := 0, cSymb
 
-   default nPos2 to 1
+   IF ! HB_ISNUMERIC( nPos2 )
+      nPos2 := 1
+   ENDIF
 
    DO WHILE .T.
       IF ( nPos1 := hb_At( subs, stroka, nPos2 ) ) == 0

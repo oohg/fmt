@@ -17,7 +17,6 @@
 
 #alerts on exit
 -beep
--exitstr
 
 # uncomment the following lines to get detailed build info
 #-trace

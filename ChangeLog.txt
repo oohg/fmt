@@ -8,6 +8,24 @@
  * 2002-12-01 23:12 UTC+0100 Foo Bar <foo.bar@foobar.org>
  */
 
+2017-10-02 21:47 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * fmt\ChangeLog.txt
+     * Updated.
+   * fmt\build.bat
+     ! First parameters is lost.
+     % Simplified.
+   * fmt\compile.bat
+     * Command's output cleaned.
+   * fmt\hbfmtcls.prg
+     ! Errors compiling with HB30.
+      * COPYING replaced by LICENSE.txt
+   * fmt\hbformat.prg
+     * COPYING replaced by LICENSE.txt
+   * fmt\ofmt.hbp
+     - Removed switch not supported by HB30.
+   * fmt\README.md
+     ! Typo.
+
 2017-10-30 21:26 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * fmt\ChangeLog.txt
      * Updated.
