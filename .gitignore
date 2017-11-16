@@ -3,6 +3,7 @@ Thumbs.db
 ehthumbs.db
 my*.*
 *.log
+tests/*.*
 
 # Folder config file
 Desktop.ini

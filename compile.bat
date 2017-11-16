@@ -49,17 +49,17 @@ rem
    set HG_DEFXHB=
    if /I not "%1"=="/H" set HG_DEFXHB=-D__XHARBOUR__
    echo Harbour: Compiling sources...
-   %HG_HRB%\%BIN_HRB%\harbour hbformat -i%HG_HRB%\include;%HG_ROOT%\include -n1 -w3 -gc0 -es2 -q0
-   %HG_HRB%\%BIN_HRB%\harbour hbfmtcls -i%HG_HRB%\include;%HG_ROOT%\include -n1 -w3 -gc0 -es2 -q0
+   %HG_HRB%\%BIN_HRB%\harbour fmt    -i%HG_HRB%\include;%HG_ROOT%\include -n1 -w3 -gc0 -es2 -q0
+   %HG_HRB%\%BIN_HRB%\harbour fmtcls -i%HG_HRB%\include;%HG_ROOT%\include -n1 -w3 -gc0 -es2 -q0
    echo BCC32: Compiling...
-   %HG_BCC%\bin\bcc32 -c -O2 -tW -M -d -a8 -OS -5 -6 -w -I%HG_HRB%\include;%HG_BCC%\include;%HG_ROOT%\include; -L%HG_HRB%\%LIB_HRB%;%HG_BCC%\lib; %HG_DEFXHB% hbformat.c > nul
-   %HG_BCC%\bin\bcc32 -c -O2 -tW -M -d -a8 -OS -5 -6 -w -I%HG_HRB%\include;%HG_BCC%\include;%HG_ROOT%\include; -L%HG_HRB%\%LIB_HRB%;%HG_BCC%\lib; %HG_DEFXHB% hbfmtcls.c > nul
+   %HG_BCC%\bin\bcc32 -c -O2 -tW -M -d -a8 -OS -5 -6 -w -I%HG_HRB%\include;%HG_BCC%\include;%HG_ROOT%\include; -L%HG_HRB%\%LIB_HRB%;%HG_BCC%\lib; %HG_DEFXHB% fmt.c    > nul
+   %HG_BCC%\bin\bcc32 -c -O2 -tW -M -d -a8 -OS -5 -6 -w -I%HG_HRB%\include;%HG_BCC%\include;%HG_ROOT%\include; -L%HG_HRB%\%LIB_HRB%;%HG_BCC%\lib; %HG_DEFXHB% fmtcls.c > nul
 
 :LINK
 
    echo ILINK32: Linking... ofmt.exe
    echo c0w32.obj + > b32.bc
-   echo hbformat.obj hbfmtcls.obj, + >> b32.bc
+   echo fmt.obj fmtcls.obj, + >> b32.bc
    echo ofmt.exe, + >> b32.bc
    echo ofmt.map, + >> b32.bc
    echo %HG_ROOT%\%LIB_GUI%\oohg.lib + >> b32.bc

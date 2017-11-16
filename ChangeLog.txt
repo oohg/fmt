@@ -8,6 +8,44 @@
  * 2002-12-01 23:12 UTC+0100 Foo Bar <foo.bar@foobar.org>
  */
 
+2017-11-15 21:22 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * fmt\.gitignore
+     + Added more files.
+   * fmt\ChangeLog.txt
+     * Updated.
+   * fmt\compile.bat
+   * fmt\ofmt.hpb
+     * Names of files changed.
+
+   - fmt\hbformat.prg
+   + fmt\fmt.prg
+     ; hbformat.prg renamed to fmt.prg
+     + Graphic interfase.
+     + Credits.
+
+   - fmt\hbfmtcls.prg
+   + fmt\fmtcls.prg
+     ; hbfmtcls.prg renamed to fmtcls.prg
+     * Class renamed to TFormatCode.
+     % Some code optimized.
+     + New configuration parameters.
+     + Some support for oohg's structures, commands and clauses.
+     ! Operator support, including macro operator.
+     + Support for a separator line stating with /* just before
+       FUNCTION, PROCEDURE, METHOD and CLASS.
+     + Support for 'form.control.property' syntax.
+     + Support for '@ row, col ...' syntax.
+
+   - fmt\hbformat.ini
+   + fmt\ofmt.ini
+     ; hbformat.ini renamed to ofmt.ini
+     + New configuration parameters.
+
+   + fmt\ofmt.rc
+   + fmt\outline.ico
+     ; By icons8 under Creative Commons Attribution-NoDerivs 3.0
+     ; See https://icons8.com/
+
 2017-10-02 21:47 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * fmt\ChangeLog.txt
      * Updated.

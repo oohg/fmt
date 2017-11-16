@@ -1,5 +1,5 @@
 /*
- * $Id: hbformat.prg $
+ * $Id: fmt.prg $
  */
 /*
  * ooHG source code:
@@ -68,7 +68,7 @@
 
 PROCEDURE Main( ... )
 
-   LOCAL oRef, aParams, cFileName, cInitDir, i, cParam, lRecursive := .F., cNewCmds, cNewClss, oMain, bMainBlock
+   LOCAL oRef, aParams, cFileName, cInitDir, i, cParam, lRecursive := .F., oMain, bMainBlock
 
    aParams := hb_AParams()
 
@@ -87,13 +87,10 @@ PROCEDURE Main( ... )
       ENDIF
    NEXT
 
-   /* OOHG extensions */
-   cNewCmds := "DEFINE,TEXTBOX,ACTIVEX,BUTTON,"
-   cNewClss := "WINDOW,ACTION,WIDTH,HEIGHT,CAPTION,VALUE,NUMERIC,INPUTMASK,PROGID,OBJ,AT,MAIN,NOSIZE,NOMAXIMIZE,TITLE,"
-
-   oRef := HBFormatCode():New( aParams, hb_FNameMerge( hb_DirBase(), "hbformat.ini" ), cNewCmds, cNewClss )
+   oRef := TFormatCode():New( aParams, hb_FNameMerge( hb_DirBase(), "ofmt.ini" ) )
    IF oRef:nErr > 0
       MsgStop( "Initialization error " + hb_ntos( oRef:nErr ) + iif( oRef:nLineErr == 0, " in parameter", " on line " + hb_ntos( oRef:nLineErr ) ) + ":" + oRef:cLineErr )
+      _OOHG_ErrorLevel := 1
       RETURN
    ENDIF
 
@@ -104,9 +101,10 @@ PROCEDURE Main( ... )
       CLIENTAREA ;
       TITLE "OOHG Code Formatter" ;
       MAIN ;
+      ICON "APPICO" ;
       NOMAXIMIZE ;
       NOSIZE ;
-      ON INIT ( oMain:Closeable := .F., Eval( bMainBlock ) )
+      ON INIT ( oMain:Closable := .F., Eval( bMainBlock ) )
 
       @ 10, 10 EDITBOX edt_Status ;
          WIDTH frm_Main.ClientWidth - 20 ;
@@ -117,23 +115,33 @@ PROCEDURE Main( ... )
          WIDTH frm_Main.ClientWidth - 20 ;
          HEIGHT 24 ;
          SMOOTH
+
+      ON KEY ESCAPE ACTION iif( oMain:Closable, oMain:Release(), NIL )
    END WINDOW
 
    IF "*" $ cFileName
       IF ( i := RAt( ".", cFileName ) ) == 0 .OR. SubStr( cFileName, i + 1, 1 ) < "A"
          MsgStop( "Wrong mask" )
+         _OOHG_ErrorLevel := 2
          RETURN
       ENDIF
 
       cInitDir := iif( ( i := RAt( '\', cFileName ) ) == 0, '.\', Left( cFileName, i ) )
       cFileName := iif( i == 0, cFileName, SubStr( cFileName, i + 1 ) )
-      bMainBlock := { || DirEval( cInitDir, cFileName, lRecursive, {| name | Reformat( oRef, name ) } ) }
+      bMainBlock := { || DirEval( cInitDir, cFileName, lRecursive, {| name | Reformat( oRef, name ) } ), oMain:Closable := .T. }
    ELSE
-      bMainBlock := { Reformat( oRef, cFileName ) }
+      bMainBlock := { || Reformat( oRef, cFileName ), oMain:Closable := .T. }
    ENDIF
 
    CENTER WINDOW frm_Main
    ACTIVATE WINDOW frm_Main
+
+   RETURN
+
+STATIC PROCEDURE ShowProgress( nItem, nTotal )
+
+   frm_Main.pgb_Progress.Value := Int( nItem / nTotal * 100 )
+   ProcessMessages()
 
    RETURN
 
@@ -146,7 +154,7 @@ STATIC PROCEDURE Reformat( oRef, cFileName )
    IF Empty( aFile := oRef:File2Array( cFileName ) )
       frm_Main.edt_Status.Value += "File " + cFileName + " not found !" + Chr( 13 ) + Chr( 10 )
    ELSE
-      oRef:bCallBack := {| aFile, nItem | frm_Main.pgb_Progress.Value := nItem / Len( aFile ) }
+      oRef:bCallBack := {| nItem, nTotal | ShowProgress( nItem, nTotal ) }
 
       frm_Main.edt_Status.Value += "File " + cFileName
 
@@ -159,25 +167,26 @@ STATIC PROCEDURE Reformat( oRef, cFileName )
    ENDIF
 
    frm_Main.pgb_Progress.Value := 100
+   ProcessMessages()
 
    RETURN
 
 STATIC PROCEDURE DirEval( cInitDir, cMask, lRecur, bCode )
 
-   LOCAL file
+   LOCAL aFile
 
    cInitDir := hb_DirSepAdd( cInitDir )
-   cMask := iif( cMask == NIL, hb_osFileMask(),  Upper( cMask ) )
+   cMask := iif( cMask == NIL, hb_osFileMask(), Upper( cMask ) )
 
-   FOR EACH file IN Directory( cInitDir + cMask, "HSD" )
-      IF "D" $ file[ F_ATTR ]
-         IF ! ( "." == file[ F_NAME ] ) .AND. ;
-               ! ( ".." == file[ F_NAME ] ) .AND. lRecur
-            DirEval( cInitDir + file[ F_NAME ], cMask, lRecur, bCode )
+   FOR EACH aFile IN Directory( cInitDir + cMask, "HSD" )
+      IF "D" $ aFile[ F_ATTR ]
+         IF ! ( "." == aFile[ F_NAME ] ) .AND. ;
+               ! ( ".." == aFile[ F_NAME ] ) .AND. lRecur
+            DirEval( cInitDir + aFile[ F_NAME ], cMask, lRecur, bCode )
          ENDIF
       ELSE
          IF bCode != NIL
-            Eval( bCode, cInitDir + file[ F_NAME ] )
+            Eval( bCode, cInitDir + aFile[ F_NAME ] )
          ENDIF
       ENDIF
    NEXT
