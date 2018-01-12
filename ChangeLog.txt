@@ -8,6 +8,13 @@
  * 2002-12-01 23:12 UTC+0100 Foo Bar <foo.bar@foobar.org>
  */
 
+2018-01-10 20:16 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * fmt\ChangeLog.txt
+     * Updated.
+   * fmt\build.bat
+   * fmt\compile.bat
+     * Deduce HG_ROOT from .bat's 0 parameter if not set.
+
 2017-11-15 21:22 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * fmt\.gitignore
      + Added more files.
