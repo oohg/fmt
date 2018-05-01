@@ -8,6 +8,10 @@
  * 2002-12-01 23:12 UTC+0100 Foo Bar <foo.bar@foobar.org>
  */
 
+2018-04-30 22:18 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * fmt\ChangeLog.txt
+     ! Typos.
+
 2018-01-10 20:16 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * fmt\ChangeLog.txt
      * Updated.
@@ -53,7 +57,7 @@
      ; By icons8 under Creative Commons Attribution-NoDerivs 3.0
      ; See https://icons8.com/
 
-2017-10-02 21:47 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+2017-11-02 21:47 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * fmt\ChangeLog.txt
      * Updated.
    * fmt\build.bat
