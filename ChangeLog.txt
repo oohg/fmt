@@ -8,6 +8,13 @@
  * 2002-12-01 23:12 UTC+0100 Foo Bar <foo.bar@foobar.org>
  */
 
+2018-05-21 10:00 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * fmt\ChangeLog.txt
+     * Updated.
+  * fmt\fmt.prg
+  * fmt\fmtcls.prg
+    * Copyright updated.
+
 2018-04-30 22:18 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * fmt\ChangeLog.txt
      ! Typos.

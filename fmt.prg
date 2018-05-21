@@ -5,7 +5,7 @@
  * ooHG source code:
  * Formatter for OOHG based source code
  *
- * Copyright 2017-2017 Fernando Yurisich <fyurisich@oohg.org>
+ * Copyright 2017-2018 Fernando Yurisich <fyurisich@oohg.org>
  * https://oohg.github.io
  *
  * Adapted from the Harbour and xHarbour source code formatters
@@ -20,7 +20,7 @@
  * Copyright 2001 Antonio Linares <alinares@fivetech.com>
  *
  * Portions of this project are based upon Harbour Project.
- * Copyright 1999-2017, https://harbour.github.io/
+ * Copyright 1999-2018, https://harbour.github.io/
  */
 /*
  * This program is free software; you can redistribute it and/or modify
@@ -198,8 +198,8 @@ STATIC PROCEDURE About()
    MsgInfo( ;
       "OOHG Source Formatter" + Chr( 13 ) + Chr( 10 ) + ;
       "based on Harbour Source Formatter" + Chr( 13 ) + Chr( 10 ) + ;
-      "Copyright (c) 2017-2017, OOHG Project, https://oohg.github.io/" + Chr( 13 ) + Chr( 10 ) + ;
-      "Copyright (c) 2010-2017, Harbour Project, https://harbour.github.io/" + Chr( 13 ) + Chr( 10 ) + ;
+      "Copyright (c) 2017-2018, OOHG Project, https://oohg.github.io/" + Chr( 13 ) + Chr( 10 ) + ;
+      "Copyright (c) 2010-2018, Harbour Project, https://harbour.github.io/" + Chr( 13 ) + Chr( 10 ) + ;
       "Copyright (c) 2009, Alexander S.Kresin" + Chr( 13 ) + Chr( 10 ) + ;
       Chr( 13 ) + Chr( 10 ) + ;
       "Syntax:  ofmt [options] [@config] <file[s]>" + Chr( 13 ) + Chr( 10 ) )

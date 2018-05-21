@@ -5,7 +5,7 @@
  * ooHG source code:
  * Formatter for OOHG based source code
  *
- * Copyright 2017-2017 Fernando Yurisich <fyurisich@oohg.org>
+ * Copyright 2017-2018 Fernando Yurisich <fyurisich@oohg.org>
  * https://oohg.github.io
  *
  * Adapted from the Harbour and xHarbour source code formatters
@@ -20,7 +20,7 @@
  * Copyright 2001 Antonio Linares <alinares@fivetech.com>
  *
  * Portions of this project are based upon Harbour Project.
- * Copyright 1999-2017, https://harbour.github.io/
+ * Copyright 1999-2018, https://harbour.github.io/
  */
 /*
  * This program is free software; you can redistribute it and/or modify
