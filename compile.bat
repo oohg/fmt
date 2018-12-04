@@ -62,7 +62,7 @@ rem
    echo ofmt.exe, + >> b32.bc
    echo ofmt.map, + >> b32.bc
    echo %HG_ROOT%\%LIB_GUI%\oohg.lib + >> b32.bc
-   for %%a in ( rtl vm gtgui lang codepage macro rdd dbfntx dbfcdx dbffpt common debug pp ct dbfdbt hbsix tip hsx xhb )      do if exist %HG_HRB%\%LIB_HRB%\%%a.lib echo %HG_HRB%\%LIB_HRB%\%%a.lib + >> b32.bc
+   for %%a in ( rtl vmmt gtgui lang codepage macro rdd dbfntx dbfcdx dbffpt common debug pp ct dbfdbt hbsix tip hsx xhb )      do if exist %HG_HRB%\%LIB_HRB%\%%a.lib echo %HG_HRB%\%LIB_HRB%\%%a.lib + >> b32.bc
    for %%a in ( hbrtl hbvm hblang hbcpage hbmacro hbrdd rddntx rddcdx rddfpt hbcommon hbdebug hbpp hbct hbwin pcrepos zlib ) do if exist %HG_HRB%\%LIB_HRB%\%%a.lib echo %HG_HRB%\%LIB_HRB%\%%a.lib + >> b32.bc
    if exist "%HG_HRB%\%LIB_HRB%\libmisc.lib"    echo %HG_HRB%\%LIB_HRB%\libmisc.lib + >> b32.bc
    if exist "%HG_HRB%\%LIB_HRB%\hboleaut.lib"   echo %HG_HRB%\%LIB_HRB%\hboleaut.lib + >> b32.bc
@@ -72,7 +72,7 @@ rem
    if exist "%HG_ROOT%\%LIB_GUI%\bostaurus.lib" echo %HG_ROOT%\%LIB_GUI%\bostaurus.lib + >> b32.bc
    if exist "%HG_ROOT%\%LIB_GUI%\hbprinter.lib" echo %HG_ROOT%\%LIB_GUI%\hbprinter.lib + >> b32.bc
    if exist "%HG_ROOT%\%LIB_GUI%\miniprint.lib" echo %HG_ROOT%\%LIB_GUI%\miniprint.lib + >> b32.bc
-   echo cw32.lib + >> b32.bc
+   echo cw32mt.lib + >> b32.bc
    echo msimg32.lib + >> b32.bc
    echo import32.lib, , + >> b32.bc
    echo %HG_ROOT%\resources\oohg.res + >> b32.bc
