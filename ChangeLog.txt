@@ -8,6 +8,11 @@
  * 2002-12-01 23:12 UTC+0100 Foo Bar <foo.bar@foobar.org>
  */
 
+2019-01-12 23:11 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * fmt\ofmt.ini
+   * fmt\fmtcls.prg
+     + Support for OOHG structures.
+
 2018-12-03 21:03 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * fmt\compile.bat
      ! Compile error because Function GetThreadID is not defined.
