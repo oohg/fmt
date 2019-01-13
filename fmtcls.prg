@@ -113,6 +113,7 @@ CREATE CLASS TFormatCode
    VAR lIndVar               INIT .T.      // If true, indent "LOCAL", "PRIVATE", etc. at the function beginning.
    VAR lIndDrt               INIT .F.      // If true, indent directives.
    VAR lIndRet               INIT .T.      // If true, indent "RETURN".
+   VAR lIncOOHG              INIT .T.      // If true, OOHG structures included in aOtherStruc are added to aContStruc before processing.
    VAR nIndLeft              INIT 3        // Leftmost indent - amount of spaces.
    VAR nIndNext              INIT 3        // Indent - amount of spaces.
    VAR nIndCont              INIT 3        // Indent for continuation ( after ';' ) lines - amount of spaces.
@@ -145,16 +146,105 @@ CREATE CLASS TFormatCode
    VAR cClauses              INIT ""
    VAR cFunctions            INIT ""
    VAR cOpAsPrfx             INIT ""
-   VAR aContStruc            INIT { { "if",     "",         { "else", "elseif" },               { "endif" }          }, ;
-                                    { "do",     "while",    { "" },                             { "enddo" }          }, ;
-                                    { "while",  "",         { "" },                             { "enddo" }          }, ;
-                                    { "for",    "",         { "" },                             { "next", "endfor" } }, ;
-                                    { "do",     "case",     { "case", "otherwise" },            { "endcase" }        }, ;
-                                    { "with",   "object",   { "" },                             { "end" }            }, ;
-                                    { "begin",  "sequence", { "recover", "always" },            { "end" }            }, ;
-                                    { "try",    "",         { "catch", "finally" },             { "end" }            }, ;
-                                    { "switch", "",         { "case", "otherwise", "default" }, { "endswitch" }      }, ;
-                                    { "define", "window",   { "" },                             { "end" }            } }
+   VAR aContStruc            INIT { { "if",     "",              { "else", "elseif" },               { "endif", "end" },          { NIL, NIL }      }, ;
+                                    { "do",     "while",         { "" },                             { "enddo", "end" },          { NIL, NIL }      }, ;
+                                    { "while",  "",              { "" },                             { "enddo", "end" },          { "", NIL }       }, ;
+                                    { "for",    "",              { "" },                             { "next", "endfor", "end" }, { NIL, NIL, NIL } }, ;
+                                    { "do",     "case",          { "case", "otherwise" },            { "endcase", "end" },        { NIL, NIL }      }, ;
+                                    { "with",   "object",        { "" },                             { "end" },                   { NIL }           }, ;
+                                    { "begin",  "sequence",      { "recover", "always" },            { "end" },                   { NIL }           }, ;
+                                    { "try",    "",              { "catch", "finally" },             { "end" },                   { NIL }           }, ;
+                                    { "switch", "",              { "case", "otherwise", "default" }, { "endswitch", "end" },      { "", NIL }       } }
+   /*
+   TODO:
+   Add support for OOHG specific structures.
+
+   Some of these pairs may be separated (and also nested) by aContStruc:
+      IF xxx                DEFINE WINDOW       DEFINE WINDOW
+         DEFINE WINDOW      IF xxx              IF xxx
+      ELSE                     ....                ....
+         DEFINE WINDOW         END WINDOW          END WINDOW
+      ENDIF                    ....                ....
+      ....                   ENDIF              ELSE
+      END WINDOW             ....                  ....
+                             END WINDOW            END WINDOW
+                                                   ....
+                                                ENDIF
+
+      DO CASE / CASE / OTHERWISE / ENDCASE
+      SWITCH / CASE / OTHERWISE / DEFAULT / ENDSWITCH
+      WITH OBJECT / END
+
+   And others not:
+      DO WHILE
+         .... 
+         DEFINE WINDOW          
+            ....                
+      ENDDO
+      ...
+      END WINDOW
+
+      WHILE / ENDDO
+      FOR / NEXT / ENDFOR
+      BEGIN SEQUENCE / RECOVER / END SEQUENCE
+      TRY / CATCH / FINALLY / END
+
+      Use array at item 5 to list compatibilities or incompatibilities:
+   */
+   VAR aOtherStruc           INIT { { "begin",  "ini",           { "" },                             { "end" },            { "ini" }                }, ;
+                                    { "define", "activex",       { "" },                             { "end" },            { "activex" }            }, ;
+                                    { "define", "anigif",        { "" },                             { "end" },            { "anigif" }             }, ;
+                                    { "define", "animatebox",    { "" },                             { "end" },            { "animatebox" }         }, ;
+                                    { "define", "browse",        { "" },                             { "end" },            { "browse" }             }, ;
+                                    { "define", "button",        { "" },                             { "end" },            { "button" }             }, ;
+                                    { "define", "checkbox",      { "" },                             { "end" },            { "checkbox" }           }, ;
+                                    { "define", "checkbutton",   { "" },                             { "end" },            { "checkbutton" }        }, ;
+                                    { "define", "checklist",     { "" },                             { "end" },            { "checklist" }          }, ;
+                                    { "define", "combobox",      { "" },                             { "end" },            { "combobox" }           }, ;
+                                    { "define", "context",       { "" },                             { "end" },            { "menu" }               }, ;
+                                    { "define", "contextmenu",   { "" },                             { "end" },            { "menu" }               }, ;
+                                    { "define", "dropdown",      { "" },                             { "end" },            { "menu" }               }, ;
+                                    { "define", "datepicker",    { "" },                             { "end" },            { "datepicker" }         }, ;
+                                    { "define", "editbox",       { "" },                             { "end" },            { "editbox" }            }, ;
+                                    { "define", "frame",         { "" },                             { "end" },            { "frame" }              }, ;
+                                    { "define", "grid",          { "" },                             { "end" },            { "grid" }               }, ;
+                                    { "define", "hotkeybox",     { "" },                             { "end" },            { "hotkeybox" }          }, ;
+                                    { "define", "hyperlink",     { "" },                             { "end" },            { "hyperlink" }          }, ;
+                                    { "define", "image",         { "" },                             { "end" },            { "image" }              }, ;
+                                    { "insert", "popup",         { "" },                             { "end" },            { "popup" }              }, ;
+                                    { "define", "internal",      { "" },                             { "end" },            { "internal" }           }, ;
+                                    { "define", "ipaddress",     { "" },                             { "end" },            { "ipaddress" }          }, ;
+                                    { "define", "label",         { "" },                             { "end" },            { "label" }              }, ;
+                                    { "define", "listbox",       { "" },                             { "end" },            { "listbox" }            }, ;
+                                    { "define", "main",          { "" },                             { "end" },            { "menu" }               }, ;
+                                    { "define", "mainmenu",      { "" },                             { "end" },            { "menu" }               }, ;
+                                    { "define", "menu",          { "" },                             { "end" },            { "menu" }               }, ;
+                                    { "define", "monthcalendar", { "" },                             { "end" },            { "monthcalendar" }      }, ;
+                                    { "define", "node",          { "" },                             { "end" },            { "node" }               }, ;
+                                    { "define", "notify",        { "" },                             { "end" },            { "menu" }               }, ;
+                                    { "define", "notifymenu",    { "" },                             { "end" },            { "menu" }               }, ;
+                                    { "define", "page",          { "" },                             { "end" },            { "page" }               }, ;
+                                    { "define", "picture",       { "" },                             { "end" },            { "picture" }            }, ;
+                                    { "define", "player",        { "" },                             { "end" },            { "player" }             }, ;
+                                    { "define", "popup",         { "" },                             { "end" },            { "popup" }              }, ;
+                                    { "define", "progressbar",   { "" },                             { "end" },            { "progressbar" }        }, ;
+                                    { "define", "progressmeter", { "" },                             { "end" },            { "progressmeter" }      }, ;
+                                    { "define", "radiogroup",    { "" },                             { "end" },            { "radiogroup" }         }, ;
+                                    { "define", "richeditbox",   { "" },                             { "end" },            { "richeditbox" }        }, ;
+                                    { "define", "scrollbar",     { "" },                             { "end" },            { "scrollbar" }          }, ;
+                                    { "define", "slider",        { "" },                             { "end" },            { "slider" }             }, ;
+                                    { "define", "spinner",       { "" },                             { "end" },            { "spinner" }            }, ;
+                                    { "define", "splitbox",      { "" },                             { "end" },            { "splitbox" }           }, ;
+                                    { "define", "statusbar",     { "" },                             { "end" },            { "statusbar" }          }, ;
+                                    { "define", "tab",           { "" },                             { "end" },            { "tab" }                }, ;
+                                    { "define", "tab page",      { "" },                             { "end" },            { "page" }               }, ;
+                                    { "define", "textarray",     { "" },                             { "end" },            { "textarray" }          }, ;
+                                    { "define", "textbox",       { "" },                             { "end" },            { "textbox" }            }, ;
+                                    { "define", "timepicker",    { "" },                             { "end" },            { "timepicker" }         }, ;
+                                    { "define", "toolbar",       { "" },                             { "end" },            { "toolbar" }            }, ;
+                                    { "define", "tree",          { "" },                             { "end" },            { "tree" }               }, ;
+                                    { "define", "window",        { "" },                             { "end" },            { "window" }             }, ;
+                                    { "define", "xbrowse",       { "" },                             { "end" },            { "xbrowse" }            } }
 
    METHOD New( aParams, cIniName )
    METHOD SetOption( cLine, i, aIni )
@@ -173,7 +263,7 @@ CREATE CLASS TFormatCode
 
 METHOD New( aParams, cIniName ) CLASS TFormatCode
 
-   LOCAL cParam, cOOHGCmds, cOOHGClss, cOOHGFuns, cOOHGOaPs
+   LOCAL cParam, cOOHGCmds, cOOHGClss, cOOHGFuns, cOOHGOaPs, aExt
 
    ::nErr := 0
 
@@ -199,6 +289,11 @@ METHOD New( aParams, cIniName ) CLASS TFormatCode
    cOOHGClss := "ACTION,AT,CAPTION,CLIENTAREA,HEIGHT,ICON,INPUTMASK,MAIN,NOMAXIMIZE,NOSIZE,NUMERIC,OBJ,PROGID,READONLY,SMOOTH,TITLE,VALUE,WIDTH,WINDOW,"
    cOOHGFuns := ""
    cOOHGOaPs := "VALUE,DEFAULT,"
+   IF ::lIncOOHG
+      FOR EACH aExt IN ::aOtherStruc
+         AAdd( ::aContStruc, aExt )
+      NEXT
+   ENDIF
 
    ::cCommands := "," + ;
       "IF,ELSE,ELSEIF,END,ENDIF,DO,WHILE,ENDDO,WITH,CASE,OTHERWISE,ENDCASE,BEGIN,ANNOUNCE,REQUEST,THREAD,DYNAMIC,EXTERNAL," + ;
@@ -259,7 +354,7 @@ STATIC FUNCTION BuiltInFunctionList()
 
 METHOD Reformat( aFile ) CLASS TFormatCode
 
-   LOCAL i, iDelta := 0, nLen := Len( aFile ), cToken1, cToken2, nLenToken, nPos
+   LOCAL i, iDelta := 0, nLen := Len( aFile ), cToken1, cToken2, nLenToken, nPos, nCol
    LOCAL nPosSep, cLine, cLineAll, nLineSegment, lAddRem
    LOCAL nContrState, nIndent, nDeep := 0, aDeep := {}
    LOCAL lPragmaDump := .F., lClass := .F., lComment := .F., nPosComment, lContinue := .F.
@@ -472,22 +567,23 @@ METHOD Reformat( aFile ) CLASS TFormatCode
                         AAdd( aDeep, NIL )
                      ENDIF
                      aDeep[ nDeep ] := nContrState
-                  ELSEIF Len( cToken1 ) < 4 .OR. ( nContrState := AScan( ::aContStruc, {| a | AScan( a[ 3 ], {| e | e == cToken1 } ) > 0 } ) ) == 0
-                     IF ( nPos := AScan( ::aContStruc, {| a | AScan( a[ 4 ], {| e | e == cToken1 } ) > 0 } ) ) > 0 .OR. ;
-                           cToken1 == "end"
-                        IF nPos > 0 .AND. nDeep > 0 .AND. aDeep[ nDeep ] != nPos
-                           DO WHILE ( nPos := AScan( ::aContStruc, {| a | AScan( a[ 4 ], {| e | e == cToken1 } ) > 0 }, ;
-                                 nPos + 1 ) ) > 0 .AND. aDeep[ nDeep ] != nPos
-                           ENDDO
-                        ENDIF
-                        IF nDeep > 0 .AND. ( aDeep[ nDeep ] == nPos .OR. cToken1 == "end" )
-                           nDeep--
-                        ELSE
-                           ::nLineErr := i - iDelta
-                           ::nErr := 6
-                           ::cLineErr := cLine
-                           RETURN .F.
-                        ENDIF
+                  ELSEIF ( nContrState := AScan( ::aContStruc, {| a | AScan( a[ 3 ], {| e | e == cToken1 } ) > 0 } ) ) > 0
+                     // do nothing
+                  ELSEIF nDeep > 0 .AND. ( nPos := AScan( ::aContStruc, {| a | ( nCol := AScan( a[ 4 ], {| e | e == cToken1 } ) ) > 0 } ) ) > 0
+                     // lines are indented and cToken1 is a closing token
+                     IF aDeep[ nDeep ] != nPos
+                        // search until nPos corresponds to the currently opened structure
+                        DO WHILE ( nPos := AScan( ::aContStruc, {| a | ( nCol := AScan( a[ 4 ], {| e | e == cToken1 } ) ) > 0 }, nPos + 1 ) ) > 0 .AND. aDeep[ nDeep ] != nPos
+                        ENDDO
+                     ENDIF
+                     IF aDeep[ nDeep ] == nPos .AND. ( ::aContStruc[ nPos, 5, nCol ] == NIL .OR. ::aContStruc[ nPos, 5, nCol ] == cToken2 )
+                        // ok
+                        nDeep--
+                     ELSE
+                        ::nLineErr := i - iDelta
+                        ::nErr := 6
+                        ::cLineErr := cLine
+                        RETURN .F.
                      ENDIF
                   ENDIF
                ENDIF
