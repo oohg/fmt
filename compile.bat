@@ -62,7 +62,7 @@ rem
    echo ofmt.exe, + >> b32.bc
    echo ofmt.map, + >> b32.bc
    echo %HG_ROOT%\%LIB_GUI%\oohg.lib + >> b32.bc
-   for %%a in ( rtl vmmt gtgui lang codepage macro rdd dbfntx dbfcdx dbffpt common debug pp ct dbfdbt hbsix tip hsx xhb )      do if exist %HG_HRB%\%LIB_HRB%\%%a.lib echo %HG_HRB%\%LIB_HRB%\%%a.lib + >> b32.bc
+   for %%a in ( rtl vmmt gtgui lang codepage macro rdd dbfntx dbfcdx dbffpt common debug pp ct dbfdbt hbsix tip hsx )        do if exist %HG_HRB%\%LIB_HRB%\%%a.lib echo %HG_HRB%\%LIB_HRB%\%%a.lib + >> b32.bc
    for %%a in ( hbrtl hbvm hblang hbcpage hbmacro hbrdd rddntx rddcdx rddfpt hbcommon hbdebug hbpp hbct hbwin pcrepos zlib ) do if exist %HG_HRB%\%LIB_HRB%\%%a.lib echo %HG_HRB%\%LIB_HRB%\%%a.lib + >> b32.bc
    if exist "%HG_HRB%\%LIB_HRB%\libmisc.lib"    echo %HG_HRB%\%LIB_HRB%\libmisc.lib + >> b32.bc
    if exist "%HG_HRB%\%LIB_HRB%\hboleaut.lib"   echo %HG_HRB%\%LIB_HRB%\hboleaut.lib + >> b32.bc
