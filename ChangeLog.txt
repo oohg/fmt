@@ -8,7 +8,7 @@
  * 2002-12-01 23:12 UTC+0100 Foo Bar <foo.bar@foobar.org>
  */
 
-2019-02-18 21:31 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+2019-02-19 21:31 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * fmt\compile.bat
      + Support for xHarbour + MinGW version.
 
