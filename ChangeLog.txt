@@ -8,6 +8,14 @@
  * 2002-12-01 23:12 UTC+0100 Foo Bar <foo.bar@foobar.org>
  */
 
+2019-02-18 21:31 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * fmt\compile.bat
+     + Support for xHarbour + MinGW version.
+
+2019-02-18 20:44 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * fmt\build.bat
+     + Support for Harbour 3.4
+
 2019-01-17 21:24 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * fmt\compile.bat
      - xhb library.
