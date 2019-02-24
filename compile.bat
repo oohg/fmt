@@ -64,42 +64,42 @@ rem
    if "%LIB_GUI%"  == "" set LIB_GUI=lib\xhb\bcc
    if "%LIB_HRB%"  == "" set LIB_HRB=lib
    if "%BIN_HRB%"  == "" set BIN_HRB=bin
-   if "%HG_RC%"    == "" set HG_RC=%HG_ROOT%\resources\oohg.res
 
    if exist ofmt.exe del ofmt.exe
    if exist ofmt.exe goto ERROR2
 
    echo xHarbour: Compiling sources...
-   "%HG_HRB%\%BIN_HRB%\harbour.exe" fmt    -i%HG_HRB%\include;%HG_ROOT%\include -n1 -w3 -gc0 -es2 -q0
-   "%HG_HRB%\%BIN_HRB%\harbour.exe" fmtcls -i%HG_HRB%\include;%HG_ROOT%\include -n1 -w3 -gc0 -es2 -q0
+   "%HG_HRB%\%BIN_HRB%\harbour.exe" fmt    -i%HG_HRB%\include;%HG_ROOT%\include -n -w3 -gc0 -es2 -q0
+   if errorlevel 1 goto ERROR3
+   "%HG_HRB%\%BIN_HRB%\harbour.exe" fmtcls -i%HG_HRB%\include;%HG_ROOT%\include -n -w3 -gc0 -es2 -q0
+   if errorlevel 1 goto ERROR3
 
    echo BCC32: Compiling sources...
-   "%HG_BCC%\bin\bcc32.exe" -c -O2 -tW -M -d -a8 -OS -5 -6 -w -I%HG_HRB%\include;%HG_BCC%\include;%HG_ROOT%\include; -L%HG_HRB%\%LIB_HRB%;%HG_BCC%\lib; -D__XHARBOUR__ fmt.c    > nul
-   "%HG_BCC%\bin\bcc32.exe" -c -O2 -tW -M -d -a8 -OS -5 -6 -w -I%HG_HRB%\include;%HG_BCC%\include;%HG_ROOT%\include; -L%HG_HRB%\%LIB_HRB%;%HG_BCC%\lib; -D__XHARBOUR__ fmtcls.c > nul
+   "%HG_BCC%\bin\bcc32.exe" -c -O2 -tW -tWM -M -d -a8 -OS -5 -6 -w -I%HG_HRB%\include;%HG_BCC%\include;%HG_ROOT%\include; -L%HG_HRB%\%LIB_HRB%;%HG_BCC%\lib; -D__XHARBOUR__ fmt.c    > nul
+   if errorlevel 1 goto ERROR3
+   "%HG_BCC%\bin\bcc32.exe" -c -O2 -tW -tWM -M -d -a8 -OS -5 -6 -w -I%HG_HRB%\include;%HG_BCC%\include;%HG_ROOT%\include; -L%HG_HRB%\%LIB_HRB%;%HG_BCC%\lib; -D__XHARBOUR__ fmtcls.c > nul
+   if errorlevel 1 goto ERROR3
 
-   echo ILINK32: Linking... ofmt.exe
+   echo BRC32: Compiling resources...
+   copy /b %HG_ROOT%\resources\oohg_bcc.rc + ofmt.rc _temp.rc /y > nul
+   %HG_BCC%\bin\brc32.exe -r -i%HG_ROOT%\resources _temp.rc > nul
+   if errorlevel 1 goto ERROR3
+
+   echo ILINK32: Linking...
    echo c0w32.obj + > b32.bc
    echo fmt.obj fmtcls.obj, + >> b32.bc
    echo ofmt.exe, + >> b32.bc
    echo ofmt.map, + >> b32.bc
    echo %HG_ROOT%\%LIB_GUI%\oohg.lib + >> b32.bc
    for %%a in ( common ct dbffpt dbfntx gtgui hbsix lang macro pcrepos rdd rtl vmmt ) do if exist %HG_HRB%\%LIB_HRB%\%%a.lib echo %HG_HRB%\%LIB_HRB%\%%a.lib + >> b32.bc
-
-REM TODO:
-rem ace32  codepage common  compiler ct      dbfcdx  dbffpt   dbfntx  debug    dllmain filemem
-rem fi_lib gdlib    hbbtree hbbz2    hbcab   hbcc    hbcgi    hbcomm  hbcurl   hbexpat hbhpdf
-rem hblzf  hbmlzo   hbmxml  hbmzip   hbodbc  hbsix   hbsqlit3 hbssl   hbtinymt hbxdiff hbzebra
-rem hbzip  hsx      jpeg    lang     libharu libmisc libnf    macro   nulsys   pcrepos pdflite
-rem png    pp       rdd     rddads   rdds    rddsql  redbfcdx redbffp xharbour xwt     zlib
-
    if exist "%HG_ROOT%\%LIB_GUI%\bostaurus.lib" echo %HG_ROOT%\%LIB_GUI%\bostaurus.lib + >> b32.bc
    if exist "%HG_ROOT%\%LIB_GUI%\hbprinter.lib" echo %HG_ROOT%\%LIB_GUI%\hbprinter.lib + >> b32.bc
    if exist "%HG_ROOT%\%LIB_GUI%\miniprint.lib" echo %HG_ROOT%\%LIB_GUI%\miniprint.lib + >> b32.bc
    echo cw32mt.lib + >> b32.bc
    echo msimg32.lib + >> b32.bc
    echo import32.lib, , + >> b32.bc
-   echo %HG_ROOT%\resources\oohg.res + >> b32.bc
-   "%HG_BCC%\bin\ilink32.exe" -Gn -Tpe -aa -L%HG_BCC%\lib;%HG_BCC%\lib\psdk; @b32.bc
+   echo _temp.res + >> b32.bc
+   "%HG_BCC%\bin\ilink32.exe" -Gn -Tpe -aa -L%HG_BCC%\lib;%HG_BCC%\lib\psdk; @b32.bc > nul
 
    if exist ofmt.exe goto OK_XB
    echo Build finished with ERROR !!!
@@ -115,18 +115,22 @@ rem png    pp       rdd     rddads   rdds    rddsql  redbfcdx redbffp xharbour x
    echo COMPILE ERROR: Is ofmt.exe running ?
    goto END
 
+:ERROR3
+   echo Build finished with ERROR !!!
+   goto END
+
 :OK_XB
 
    echo Build finished OK !!!
 
 :CLEAN_XB
 
-   for %%a in (*.tds)  do del %%a
-   for %%a in (*.c)    do del %%a
-   for %%a in (*.map)  do del %%a
-   for %%a in (*.obj)  do del %%a
-   for %%a in (b32.bc) do del %%a
-   for %%a in (*.res)  do del %%a
+   for %%a in ( *.tds )   do del %%a > nul
+   for %%a in ( *.c )     do del %%a > nul
+   for %%a in ( *.map )   do del %%a > nul
+   for %%a in ( *.obj )   do del %%a > nul
+   for %%a in ( b32.bc )  do del %%a > nul
+   for %%a in ( _temp.* ) do del %%a > nul
    goto END
 
 :COMPILE_XM
@@ -138,12 +142,10 @@ rem png    pp       rdd     rddads   rdds    rddsql  redbfcdx redbffp xharbour x
    if "%LIB_GUI%"  == "" set LIB_GUI=lib\xhb\mingw
    if "%LIB_HRB%"  == "" set LIB_HRB=lib
    if "%BIN_HRB%"  == "" set BIN_HRB=bin
-   if "%HG_RC%"    == "" set HG_RC=%HG_ROOT%\resources\oohg.res
 
    if exist ofmt.exe del ofmt.exe
    if exist ofmt.exe goto ERROR2
 
-   set HG_STATIC_LIBS=-static -static-libgcc
    set HG_PATH=%PATH%
    set PATH=%HG_MINGW%\bin;%HG_HRB%\%BIN_HRB%
 
@@ -152,16 +154,22 @@ rem png    pp       rdd     rddads   rdds    rddsql  redbfcdx redbffp xharbour x
    "%HG_HRB%\%BIN_HRB%\harbour.exe" fmtcls -i%HG_HRB%\include;%HG_ROOT%\include -n1 -w3 -gc0 -es2 -q0
 
    echo GCC: Compiling...
-   gcc -I. -I%HG_HRB%\include -I%HG_ROOT%\include -Wall -c fmt.c    -ofmt.o
-   gcc -I. -I%HG_HRB%\include -I%HG_ROOT%\include -Wall -c fmtcls.c -fmtcls.o
+   gcc -I. -I%HG_HRB%\include -I%HG_ROOT%\include -Wall -c fmt.c    -o fmt.o
+   gcc -I. -I%HG_HRB%\include -I%HG_ROOT%\include -Wall -c fmtcls.c -o fmtcls.o
 
    echo WindRes: Compiling resource file...
    echo #define oohgpath %HG_ROOT%\RESOURCES > _oohg_resconfig.h
    copy /b %HG_ROOT%\resources\ooHG.rc + ofmt.rc _temp.rc > nul
    windres -i _temp.rc -o _temp.o
 
-   echo Linking...
-   gcc -Wall -oofmt.exe fmt.o fmtcls.o _temp.o -mwindows -L. -L%HG_MINGW%\lib -L%HG_HRB%\%LIB_HRB% -L%HG_ROOT%\%LIB_GUI% -Wl,--start-group -looHG -lhbprinter -lminiprint -lbostaurus -lgtgui %HG_ADDLIBS% -lhbsix -lhbvmmt -lhbrdd -lhbmacro -lhbmemio -lhbpp -lhbrtl -lhbzebra -lhbhpdf -lpng -lhbziparc -lhblang -lhbcommon -lhbnulrdd -lrddntx -lrddcdx -lrddfpt -lhbct -lhbmisc -lxhb -lhbodbc -lrddsql -lsddodbc -lodbc32 %THR_LIB% -lhbwin -lhbcpage -lhbmzip -lminizip -lhbzlib -lhbtip -luser32 -lwinspool -lcomctl32 -lcomdlg32 -lgdi32 -lole32 -loleaut32 -luuid -lwinmm -lvfw32 -lwsock32 -lws2_32 -lmsimg32 -liphlpapi -Wl,--end-group %HG_STATIC_LIBS%
+   echo GCC: Linking...
+   set HG_OBJS=%HG_HRB%\%LIB_HRB%\mainwin.o fmt.o fmtcls.o _temp.o
+   set HG_LIBS=-lbostaurus -lhbprinter -lminiprint -looHG
+   set HG_CFLAGS=-Wall -mwindows -static -static-libgcc
+   set HG_XLIBS=-lcodepage -lcommon -lct -ldbfcdx -ldbffpt -ldbfntx -ldebug -lgtgui -lgtwin -lhbsix -lhsx -llang -lmacro -lpcrepos -lpp -lrdd -lrtl -lvmmt
+   set HG_WLIBS=-luser32 -lwinspool -lgdi32 -lcomctl32 -lcomdlg32 -lole32 -loleaut32 -luuid -lmpr -lwsock32 -lws2_32 -lmapi32 -lwinmm -lvfw32 -lmsimg32 -liphlpapi
+   set HG_SEARCH=-L. -L%HG_MINGW%\lib -L%HG_HRB%\%LIB_HRB% -L%HG_ROOT%\%LIB_GUI%
+   gcc -o ofmt.exe %HG_OBJS% %HG_CFLAGS% %HG_SEARCH% -Wl,--start-group %HG_XLIBS% %HG_LIBS% %HG_WLIBS% -Wl,--end-group
 
    if exist ofmt.exe goto OK_XM
    echo Build finished with ERROR !!!
@@ -173,16 +181,21 @@ rem png    pp       rdd     rddads   rdds    rddsql  redbfcdx redbffp xharbour x
 
 :CLEAN_XM
 
-   if exist _temp.o del _temp.o
-   if exist _temp.rc del _temp.rc
-   if exist _oohg_resconfig.h del _oohg_resconfig.h
-   del fmt.o
-   del fmt.c
-   del fmtcls.o
-   del fmtcls.c
+   if exist _temp.o del _temp.o > nul
+   if exist _temp.rc del _temp.rc > nul
+   if exist _oohg_resconfig.h del _oohg_resconfig.h > nul
+   del fmt.o > nul
+   del fmt.c > nul
+   del fmtcls.o > nul
+   del fmtcls.c > nul
    set PATH=%HG_PATH%
+   set HG_OBJS=
+   set HG_LIBS=
+   set HG_CFLAGS=
+   set HG_XLIBS=
+   set HG_WLIBS=
+   set HG_SEARCH=
    set HG_PATH=
-   set HG_STATIC_LIBS=
    goto END
 
 :END

@@ -1,1 +1,6 @@
-APPICO ICON outline.ico
+//
+// $Id: ofmt.rc $
+//
+
+APPICO                  ICON       outline.ico
+
