@@ -8,6 +8,17 @@
  * 2002-12-01 23:12 UTC+0100 Foo Bar <foo.bar@foobar.org>
  */
 
+2019-02-24 01:01 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * fmt\compile.bat
+     ! Compilation of resources file.
+     ! RTE: No startup procedure.
+   * fmt\ofmt.rc
+     * Format.
+   + fmt\outline_256.ico
+     ; Old outline.ico was renamed to outline_256.ico
+   * fmt\outline.ico
+     ; Removed 256x256 icon because BCC refuses to compile.
+
 2019-02-19 21:31 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * fmt\compile.bat
      + Support for xHarbour + MinGW version.
