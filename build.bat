@@ -49,14 +49,11 @@ rem
 
 :CALL30
 
-   if exist "%HG_ROOT%\BuildApp32.bat" goto VERSIONNEEDED
-   if exist "%HG_ROOT%\BuildApp34.bat" goto VERSIONNEEDED
    call "%HG_ROOT%\BuildApp.bat" %HG_CLEAN% HM30 ofmt %1 %2 %3 %4 %5 %6 %7 %8 %9
    goto END
 
 :CALL32
 
-   if exist "%HG_ROOT%\BuildApp34.bat" goto VERSIONNEEDED
    call "%HG_ROOT%\BuildApp.bat" %HG_CLEAN% HM32 ofmt  %1 %2 %3 %4 %5 %6 %7 %8 %9
    goto END
 
