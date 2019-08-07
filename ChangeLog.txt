@@ -8,6 +8,10 @@
  * 2002-12-01 23:12 UTC+0100 Foo Bar <foo.bar@foobar.org>
  */
 
+2019-08-07 18:00 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * fmt\compile.bat
+     ! Path is not properly restored if it contains & chars.
+
 2019-03-03 17:47 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * fmt\build.bat
      ! oFMT is not builded when more than one flavor is installed.
