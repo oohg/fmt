@@ -146,8 +146,8 @@ rem
    if exist ofmt.exe del ofmt.exe
    if exist ofmt.exe goto ERROR2
 
-   set HG_PATH=%PATH%
-   set PATH=%HG_MINGW%\bin;%HG_HRB%\%BIN_HRB%
+   set "HG_PATH=%PATH%"
+   set "PATH=%HG_MINGW%\bin;%HG_HRB%\%BIN_HRB%"
 
    echo xHarbour: Compiling sources...
    "%HG_HRB%\%BIN_HRB%\harbour.exe" fmt    -i%HG_HRB%\include;%HG_ROOT%\include -n1 -w3 -gc0 -es2 -q0
@@ -188,7 +188,7 @@ rem
    del fmt.c > nul
    del fmtcls.o > nul
    del fmtcls.c > nul
-   set PATH=%HG_PATH%
+   set "PATH=%HG_PATH%"
    set HG_OBJS=
    set HG_LIBS=
    set HG_CFLAGS=
