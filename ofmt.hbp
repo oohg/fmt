@@ -25,6 +25,9 @@
 # libs
 ${HG_ROOT}\oohg.hbc
 
+# gt
+-gui
+
 # files to compile and link
 fmt.prg
 fmtcls.prg
