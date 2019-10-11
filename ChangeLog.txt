@@ -8,6 +8,10 @@
  * 2002-12-01 23:12 UTC+0100 Foo Bar <foo.bar@foobar.org>
  */
 
+2019-10-11 18:02 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * fmt\compile.bat
+     ! Wrong compiler switch.
+
 2019-09-08 12:30 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    ! Console window is opened because of missing -gui flag.
 
