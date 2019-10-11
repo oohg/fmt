@@ -150,8 +150,8 @@ rem
    set "PATH=%HG_MINGW%\bin;%HG_HRB%\%BIN_HRB%"
 
    echo xHarbour: Compiling sources...
-   "%HG_HRB%\%BIN_HRB%\harbour.exe" fmt    -i%HG_HRB%\include;%HG_ROOT%\include -n1 -w3 -gc0 -es2 -q0
-   "%HG_HRB%\%BIN_HRB%\harbour.exe" fmtcls -i%HG_HRB%\include;%HG_ROOT%\include -n1 -w3 -gc0 -es2 -q0
+   "%HG_HRB%\%BIN_HRB%\harbour.exe" fmt    -i%HG_HRB%\include;%HG_ROOT%\include -n -w3 -gc0 -es2 -q0
+   "%HG_HRB%\%BIN_HRB%\harbour.exe" fmtcls -i%HG_HRB%\include;%HG_ROOT%\include -n -w3 -gc0 -es2 -q0
 
    echo GCC: Compiling...
    gcc -I. -I%HG_HRB%\include -I%HG_ROOT%\include -Wall -c fmt.c    -o fmt.o
