@@ -8,7 +8,7 @@
  * 2002-12-01 23:12 UTC+0100 Foo Bar <foo.bar@foobar.org>
  */
 
-2019-11-04 15:18 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+2019-11-08 15:23 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * fmt\compile.bat
      + Support for HG_CCOMP envvar.
      + Support for BCC 5.8.2
