@@ -19,7 +19,6 @@ rem
    set HG_ROOT=
    set HG_HRB=
    set HG_BCC=
-   set HG_CCOMP=
    set LIB_GUI=
    set LIB_HRB=
    set BIN_HRB=
@@ -33,9 +32,8 @@ rem
 
 :TEST
 
-   if /I "%1"=="XB55" ( shift & goto COMPILE_XB )
-   if /I "%1"=="XB58" ( shift & goto COMPILE_XB )
-   if /I "%1"=="XM"   ( shift & goto COMPILE_XM )
+   if /I "%1"=="XB" ( shift & goto CALLXB )
+   if /I "%1"=="XM" ( shift & goto CALLXM )
 
 :DETECT_XB
 
@@ -50,10 +48,8 @@ rem
 :SYNTAX
 
    echo Syntax:
-   echo   To build with xHarbour and BCC 5.5.1
-   echo       compile [/C] XB55 file [options]
-   echo   To build with xHarbour and BCC 5.8.2
-   echo       compile [/C] XB58 file [options]
+   echo   To build with xHarbour and BCC
+   echo       compile [/C] XB file [options]
    echo   To build with xHarbour and MinGW
    echo       compile [/C] XM file [options]
    echo.
@@ -63,9 +59,8 @@ rem
 
    if "%HG_HRB%"   == "" set HG_HRB=%HG_ROOT%\xhbcc
    if "%HG_BCC%"   == "" set HG_BCC=%HG_CCOMP%
-   if "%HG_BCC%"   == "" if /I "%1" == "XB58" set HG_BCC=c:\Borland\BCC58
    if "%HG_BCC%"   == "" set HG_BCC=c:\Borland\BCC55
-   set HG_CCOMP=%HG_BCC%
+   if "%HG_CCOMP%" == "" set HG_CCOMP=%HG_BCC%
    if "%LIB_GUI%"  == "" set LIB_GUI=lib\xhb\bcc
    if "%LIB_HRB%"  == "" set LIB_HRB=lib
    if "%BIN_HRB%"  == "" set BIN_HRB=bin
@@ -142,7 +137,7 @@ rem
    if "%HG_HRB%"   == "" set HG_HRB=%HG_ROOT%\xhmingw
    if "%HG_MINGW%" == "" set HG_MINGW=%HG_CCOMP%
    if "%HG_MINGW%" == "" set HG_MINGW=%HG_HRB%\comp\mingw
-   set HG_CCOMP=%HG_MINGW%
+   if "%HG_CCOMP%" == "" set HG_CCOMP=%HG_MINGW%
    if "%LIB_GUI%"  == "" set LIB_GUI=lib\xhb\mingw
    if "%LIB_HRB%"  == "" set LIB_HRB=lib
    if "%BIN_HRB%"  == "" set BIN_HRB=bin
