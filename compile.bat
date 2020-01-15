@@ -170,7 +170,7 @@ rem
    set HG_OBJS=%HG_HRB%\%LIB_HRB%\mainwin.o fmt.o fmtcls.o _temp.o
    set HG_LIBS=-lbostaurus -lhbprinter -lminiprint -looHG
    set HG_CFLAGS=-Wall -mwindows -static -static-libgcc
-   set HG_XLIBS=-lcodepage -lcommon -lct -ldbfcdx -ldbffpt -ldbfntx -ldebug -lgtgui -lgtwin -lhbsix -lhsx -llang -lmacro -lpcrepos -lpp -lrdd -lrtl -lvmmt
+   set HG_XLIBS=-lrtl -lvmmt -lrdd -lcodepage -lcommon -lct -ldbfcdx -ldbffpt -ldbfntx -ldebug -lgtgui -lgtwin -lhbsix -lhsx -llang -lmacro -lpcrepos -lpp
    set HG_WLIBS=-luser32 -lwinspool -lgdi32 -lcomctl32 -lcomdlg32 -lole32 -loleaut32 -luuid -lmpr -lwsock32 -lws2_32 -lmapi32 -lwinmm -lvfw32 -lmsimg32 -liphlpapi
    set HG_SEARCH=-L. -L%HG_MINGW%\lib -L%HG_HRB%\%LIB_HRB% -L%HG_ROOT%\%LIB_GUI%
    gcc -o ofmt.exe %HG_OBJS% %HG_CFLAGS% %HG_SEARCH% -Wl,--start-group %HG_XLIBS% %HG_LIBS% %HG_WLIBS% -Wl,--end-group
