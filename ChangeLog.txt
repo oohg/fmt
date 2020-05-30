@@ -8,6 +8,19 @@
  * 2002-12-01 23:12 UTC+0100 Foo Bar <foo.bar@foobar.org>
  */
 
+2020-05-30 09:30 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+  * fmt\fmt.prg
+  * fmt\fmtcls.prg
+    * Copyright date updated.
+
+2020-05-30 09:29 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * fmt\compile.bat
+     + Support for version data.
+
+2020-05-30 09:28 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * fmt\build.bat
+     + Support for new flavors.
+
 2020-01-15 20:37 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * fmt\compile.bat
      ! Libraries order.
