@@ -163,6 +163,7 @@ rem
 
    echo WindRes: Compiling resource file...
    echo #define oohgpath %HG_ROOT%\RESOURCES > _oohg_resconfig.h
+   echo #include "%HG_ROOT%\INCLUDE\oohgversion.h" >> _oohg_resconfig.h
    copy /b %HG_ROOT%\resources\ooHG.rc + ofmt.rc _temp.rc > nul
    windres -i _temp.rc -o _temp.o
 
