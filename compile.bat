@@ -3,6 +3,8 @@ rem
 rem $Id: compile.bat $
 rem
 
+setlocal
+
 :COMPILE_FMT
 
    pushd "%~dp0"
@@ -14,7 +16,7 @@ rem
 
    if not exist fmtcls.prg goto ERROR1
 
-   if /I not "%1" == "/C" goto ROOT
+   if /I not "%1" == "/C" goto VERBOSE
    shift
    set HG_ROOT=
    set HG_HRB=
@@ -23,6 +25,13 @@ rem
    set LIB_GUI=
    set LIB_HRB=
    set BIN_HRB=
+
+:VERBOSE
+
+   set HG_SILENT=^> nul
+   if /I not "%1" == "/V" goto ROOT
+   shift
+   set HG_SILENT=
 
 :ROOT
 
@@ -80,14 +89,14 @@ rem
    if errorlevel 1 goto ERROR3
 
    echo BCC32: Compiling sources...
-   "%HG_BCC%\bin\bcc32.exe" -c -O2 -tW -tWM -M -d -a8 -OS -5 -6 -w -I%HG_HRB%\include;%HG_BCC%\include;%HG_ROOT%\include; -L%HG_HRB%\%LIB_HRB%;%HG_BCC%\lib; -D__XHARBOUR__ fmt.c    > nul
+   "%HG_BCC%\bin\bcc32.exe" -c -O2 -tW -tWM -M -d -a8 -OS -5 -6 -w -I%HG_HRB%\include;%HG_BCC%\include;%HG_ROOT%\include; -L%HG_HRB%\%LIB_HRB%;%HG_BCC%\lib; -D__XHARBOUR__ fmt.c    %HG_SILENT%
    if errorlevel 1 goto ERROR3
-   "%HG_BCC%\bin\bcc32.exe" -c -O2 -tW -tWM -M -d -a8 -OS -5 -6 -w -I%HG_HRB%\include;%HG_BCC%\include;%HG_ROOT%\include; -L%HG_HRB%\%LIB_HRB%;%HG_BCC%\lib; -D__XHARBOUR__ fmtcls.c > nul
+   "%HG_BCC%\bin\bcc32.exe" -c -O2 -tW -tWM -M -d -a8 -OS -5 -6 -w -I%HG_HRB%\include;%HG_BCC%\include;%HG_ROOT%\include; -L%HG_HRB%\%LIB_HRB%;%HG_BCC%\lib; -D__XHARBOUR__ fmtcls.c %HG_SILENT%
    if errorlevel 1 goto ERROR3
 
    echo BRC32: Compiling resources...
-   copy /b %HG_ROOT%\resources\oohg_bcc.rc + ofmt.rc _temp.rc /y > nul
-   %HG_BCC%\bin\brc32.exe -r -i%HG_ROOT%\resources _temp.rc > nul
+   copy /b %HG_ROOT%\resources\oohg_bcc.rc + ofmt.rc _temp.rc /y %HG_SILENT%
+   %HG_BCC%\bin\brc32.exe -r -i%HG_ROOT%\resources _temp.rc -I%HG_ROOT%\include %HG_SILENT%
    if errorlevel 1 goto ERROR3
 
    echo ILINK32: Linking...
@@ -103,7 +112,7 @@ rem
    for %%a in ( cw32mt import32 user32 winspool gdi32 comctl32 comdlg32 shell32 ole32 oleaut32 uuid mpr wsock32 ws2_32 mapi32 winmm vfw32 msimg32 iphlpapi ) do echo %%a.lib + >> b32.bc
    echo , , + >> b32.bc
    echo _temp.res + >> b32.bc
-   "%HG_BCC%\bin\ilink32.exe" -Gn -Tpe -aa -L%HG_BCC%\lib;%HG_BCC%\lib\psdk; @b32.bc > nul
+   "%HG_BCC%\bin\ilink32.exe" -Gn -Tpe -aa -L%HG_BCC%\lib;%HG_BCC%\lib\psdk; @b32.bc %HG_SILENT%
 
    if exist ofmt.exe goto OK_XB
    echo Build finished with ERROR !!!
@@ -129,12 +138,12 @@ rem
 
 :CLEAN_XB
 
-   for %%a in ( *.tds )   do del %%a > nul
-   for %%a in ( *.c )     do del %%a > nul
-   for %%a in ( *.map )   do del %%a > nul
-   for %%a in ( *.obj )   do del %%a > nul
-   for %%a in ( b32.bc )  do del %%a > nul
-   for %%a in ( _temp.* ) do del %%a > nul
+   for %%a in ( *.tds )   do del %%a %HG_SILENT%
+   for %%a in ( *.c )     do del %%a %HG_SILENT%
+   for %%a in ( *.map )   do del %%a %HG_SILENT%
+   for %%a in ( *.obj )   do del %%a %HG_SILENT%
+   for %%a in ( b32.bc )  do del %%a %HG_SILENT%
+   for %%a in ( _temp.* ) do del %%a %HG_SILENT%
    goto END
 
 :COMPILE_XM
@@ -164,7 +173,7 @@ rem
    echo WindRes: Compiling resource file...
    echo #define oohgpath %HG_ROOT%\RESOURCES > _oohg_resconfig.h
    echo #include "%HG_ROOT%\INCLUDE\oohgversion.h" >> _oohg_resconfig.h
-   copy /b %HG_ROOT%\resources\ooHG.rc + ofmt.rc _temp.rc > nul
+   copy /b %HG_ROOT%\resources\ooHG.rc + ofmt.rc _temp.rc %HG_SILENT%
    windres -i _temp.rc -o _temp.o
 
    echo GCC: Linking...
@@ -186,13 +195,13 @@ rem
 
 :CLEAN_XM
 
-   if exist _temp.o del _temp.o > nul
-   if exist _temp.rc del _temp.rc > nul
-   if exist _oohg_resconfig.h del _oohg_resconfig.h > nul
-   del fmt.o > nul
-   del fmt.c > nul
-   del fmtcls.o > nul
-   del fmtcls.c > nul
+   if exist _temp.o del _temp.o %HG_SILENT%
+   if exist _temp.rc del _temp.rc %HG_SILENT%
+   if exist _oohg_resconfig.h del _oohg_resconfig.h %HG_SILENT%
+   del fmt.o %HG_SILENT%
+   del fmt.c %HG_SILENT%
+   del fmtcls.o %HG_SILENT%
+   del fmtcls.c %HG_SILENT%
    set "PATH=%HG_PATH%"
    set HG_OBJS=
    set HG_LIBS=
