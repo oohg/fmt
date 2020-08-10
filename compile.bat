@@ -95,8 +95,8 @@ setlocal
    if errorlevel 1 goto ERROR3
 
    echo BRC32: Compiling resources...
-   copy /b %HG_ROOT%\resources\oohg_bcc.rc + ofmt.rc _temp.rc /y %HG_SILENT%
-   %HG_BCC%\bin\brc32.exe -r -i%HG_ROOT%\resources _temp.rc -I%HG_ROOT%\include %HG_SILENT%
+   copy /b ofmt.rc + %HG_ROOT%\resources\oohg_bcc.rc _temp.rc /y %HG_SILENT%
+   "%HG_BCC%\bin\brc32.exe" -i%HG_ROOT%\include -i%HG_ROOT%\resources -i%HG_BCC%\include -r _temp.rc %HG_SILENT%
    if errorlevel 1 goto ERROR3
 
    echo ILINK32: Linking...
@@ -172,9 +172,8 @@ setlocal
 
    echo WindRes: Compiling resource file...
    echo #define oohgpath %HG_ROOT%\RESOURCES > _oohg_resconfig.h
-   echo #include "%HG_ROOT%\INCLUDE\oohgversion.h" >> _oohg_resconfig.h
    copy /b %HG_ROOT%\resources\ooHG.rc + ofmt.rc _temp.rc %HG_SILENT%
-   windres -i _temp.rc -o _temp.o
+   windres.exe -I %HG_ROOT%\INCLUDE -i _temp.rc -o _temp.o %HG_SILENT%
 
    echo GCC: Linking...
    set HG_OBJS=%HG_HRB%\%LIB_HRB%\mainwin.o fmt.o fmtcls.o _temp.o
