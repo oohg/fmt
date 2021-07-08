@@ -1,9 +1,4 @@
 @echo off
-rem
-rem $Id: compile.bat $
-rem
-
-setlocal
 
 :COMPILE_FMT
 
@@ -95,7 +90,9 @@ setlocal
    if errorlevel 1 goto ERROR3
 
    echo BRC32: Compiling resources...
-   copy /b ofmt.rc + %HG_ROOT%\resources\oohg_bcc.rc _temp.rc /y %HG_SILENT%
+   echo #define oohgpath %HG_ROOT%\RESOURCES > _oohg_resconfig.h
+   echo. > %HG_ROOT%\resources\filler
+   copy /b ofmt.rc + %HG_ROOT%\resources\filler + %HG_ROOT%\resources\oohg_bcc.rc _temp.rc /y %HG_SILENT%
    "%HG_BCC%\bin\brc32.exe" -i%HG_ROOT%\include -i%HG_ROOT%\resources -i%HG_BCC%\include -r _temp.rc %HG_SILENT%
    if errorlevel 1 goto ERROR3
 
@@ -164,16 +161,22 @@ setlocal
 
    echo xHarbour: Compiling sources...
    "%HG_HRB%\%BIN_HRB%\harbour.exe" fmt    -i%HG_HRB%\include;%HG_ROOT%\include -n -w3 -gc0 -es2 -q0
+   if errorlevel 1 goto ERROR3
    "%HG_HRB%\%BIN_HRB%\harbour.exe" fmtcls -i%HG_HRB%\include;%HG_ROOT%\include -n -w3 -gc0 -es2 -q0
+   if errorlevel 1 goto ERROR3
 
    echo GCC: Compiling...
    gcc -I. -I%HG_HRB%\include -I%HG_ROOT%\include -Wall -c fmt.c    -o fmt.o
+   if errorlevel 1 goto ERROR3
    gcc -I. -I%HG_HRB%\include -I%HG_ROOT%\include -Wall -c fmtcls.c -o fmtcls.o
+   if errorlevel 1 goto ERROR3
 
    echo WindRes: Compiling resource file...
    echo #define oohgpath %HG_ROOT%\RESOURCES > _oohg_resconfig.h
-   copy /b %HG_ROOT%\resources\ooHG.rc + ofmt.rc _temp.rc %HG_SILENT%
+   echo. > %HG_ROOT%\resources\filler
+   copy /b ofmt.rc + %HG_ROOT%\resources\filler + %HG_ROOT%\resources\oohg.rc _temp.rc /y %HG_SILENT%
    windres.exe -I %HG_ROOT%\INCLUDE -i _temp.rc -o _temp.o %HG_SILENT%
+   if errorlevel 1 goto ERROR3
 
    echo GCC: Linking...
    set HG_OBJS=%HG_HRB%\%LIB_HRB%\mainwin.o fmt.o fmtcls.o _temp.o
@@ -209,6 +212,7 @@ setlocal
    set HG_WLIBS=
    set HG_SEARCH=
    set HG_PATH=
+   set HG_SILENT=
    goto END
 
 :END
