@@ -8,6 +8,14 @@
  * 2002-12-01 23:12 UTC+0100 Foo Bar <foo.bar@foobar.org>
  */
 
+2021-07-08 17:47 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * fmt\compile.bat
+     ! Resource compilation.
+
+2021-07-08 17:05 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+  * fmt\fmtcls.prg
+    * Function hb_MemoRead was replaced by Memoread.
+
 2020-05-31 20:51 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * fmt\compile.bat
      + /V = verbose switch.
