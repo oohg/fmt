@@ -79,7 +79,6 @@
    #xtranslate hb_AIns( <arr>, <nItem>, <value> ) =>   AIns( <arr>, <nItem> ) ;; <arr>\[ <nItem> \] := <value>
    #xtranslate hb_At( <subs>, <stroka>, <nPos2> ) =>   At( <subs>, <stroka>, <nPos2> )
    #xtranslate hb_DirScan( <cDir>, <cAtt> )       =>   DirectoryRecurse( <cDir> + <cAtt> )
-   #xtranslate hb_MemoRead( <x> )                 =>   MemoRead( <x> )
 #endif
 
 #define RF_STATE_FUNC   1
@@ -1456,7 +1455,7 @@ PROCEDURE AddFunctionsFromFiles( /* @ */ cFunctions, cFiles )
 
    /* from specified list of files */
    FOR EACH cName IN hb_ATokens( cFiles )
-      FileToFuncList( @cFunctions, hb_MemoRead( hb_DirBase() + cName ) )
+      FileToFuncList( @cFunctions, MemoRead( hb_DirBase() + cName ) )
    NEXT
 
    RETURN
