@@ -18,6 +18,9 @@
 #alerts on exit
 -beep
 
+#remove debugging and other extra information
+-strip
+
 # uncomment the following lines to get detailed build info
 #-trace
 #-info
