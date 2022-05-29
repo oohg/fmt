@@ -1,4 +1,7 @@
 @echo off
+rem
+rem $Id: compile.bat $
+rem
 
 :COMPILE_FMT
 
@@ -67,8 +70,8 @@
 
    if "%HG_HRB%"   == "" set HG_HRB=%HG_ROOT%\xhbcc
    if "%HG_BCC%"   == "" set HG_BCC=%HG_CCOMP%
-   if "%HG_BCC%"   == "" if /I "%1" == "XB58" set HG_BCC=c:\Borland\BCC58
-   if "%HG_BCC%"   == "" set HG_BCC=c:\Borland\BCC55
+   if "%HG_BCC%"   == "" if /I "%1"=="XB58" set HG_BCC=C:\BORLAND\BCC58
+   if "%HG_BCC%"   == "" set HG_BCC=C:\BORLAND\BCC55
    set HG_CCOMP=%HG_BCC%
    if "%LIB_GUI%"  == "" set LIB_GUI=lib\xhb\bcc
    if "%LIB_HRB%"  == "" set LIB_HRB=lib
