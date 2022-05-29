@@ -2,10 +2,10 @@
  * $Id: fmt.prg $
  */
 /*
- * ooHG source code:
+ * OOHG source code:
  * Formatter for OOHG based source code
  *
- * Copyright 2014-2021 Fernando Yurisich <fyurisich@oohg.org> and contributors of
+ * Copyright 2014-2022 Fernando Yurisich <fyurisich@oohg.org> and contributors of
  * the Object Oriented (x)Harbour GUI (aka OOHG) Project, https://oohg.github.io
  *
  * Adapted from the Harbour and xHarbour source code formatters
@@ -14,14 +14,14 @@
  *
  * Portions of this project are based upon:
  *    "Harbour MiniGUI Extended Edition Library"
- *       Copyright 2005-2021 MiniGUI Team, http://hmgextended.com
+ *       Copyright 2005 MiniGUI Team http://hmgextended.com
  *    "Harbour GUI framework for Win32"
  *       Copyright 2001 Alexander S.Kresin <alex@kresin.ru>
  *       Copyright 2001 Antonio Linares <alinares@fivetech.com>
  *    "Harbour MiniGUI"
- *       Copyright 2002-2016 Roberto Lopez <mail.box.hmg@gmail.com>
+ *       Copyright 2002 Roberto Lopez <mail.box.hmg@gmail.com>
  *    "Harbour Project"
- *       Copyright 1999-2021 Contributors, https://harbour.github.io/
+ *       Copyright 1999 Contributors https://harbour.github.io/
  */
 /*
  * This program is free software; you can redistribute it and/or modify
@@ -199,7 +199,7 @@ STATIC PROCEDURE About()
    MsgInfo( ;
       "OOHG Source Formatter" + Chr( 13 ) + Chr( 10 ) + ;
       "based on Harbour Source Formatter" + Chr( 13 ) + Chr( 10 ) + ;
-      "Copyright (c) 2017-2018, OOHG Project, https://oohg.github.io/" + Chr( 13 ) + Chr( 10 ) + ;
+      "Copyright (c) 2017-2018, OOHG Project https://oohg.github.io/" + Chr( 13 ) + Chr( 10 ) + ;
       "Copyright (c) 2010-2018, Harbour Project, https://harbour.github.io/" + Chr( 13 ) + Chr( 10 ) + ;
       "Copyright (c) 2009, Alexander S.Kresin" + Chr( 13 ) + Chr( 10 ) + ;
       Chr( 13 ) + Chr( 10 ) + ;
