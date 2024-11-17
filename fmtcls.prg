@@ -778,7 +778,7 @@ METHOD FormatLine( cLine, lIsContinuation ) CLASS TFormatCode
                ::ConvertCmd( @cLine, nBegin, nEnd )
             ENDIF
             nState := FL_STATE_ANY
-            DO WHILE i < nLen .AND. SubStr( cLine, i, 2 ) # "*/"   // NOTE: this must come before ELSEIF c $ cOperators
+            DO WHILE i < nLen .AND. SubStr( cLine, i, 2 ) != "*/"   // NOTE: this must come before ELSEIF c $ cOperators
                i ++
             ENDDO
             IF i == nLen
