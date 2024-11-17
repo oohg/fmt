@@ -91,7 +91,7 @@ PROCEDURE Main( ... )
    oRef := TFormatCode():New( aParams, hb_FNameMerge( hb_DirBase(), "ofmt.ini" ) )
    IF oRef:nErr > 0
       MsgStop( "Initialization error " + hb_ntos( oRef:nErr ) + iif( oRef:nLineErr == 0, " in parameter", " on line " + hb_ntos( oRef:nLineErr ) ) + ":" + oRef:cLineErr )
-      _OOHG_ErrorLevel := 1
+      ErrorLevel( 1 )
       RETURN
    ENDIF
 
@@ -123,7 +123,7 @@ PROCEDURE Main( ... )
    IF "*" $ cFileName
       IF ( i := RAt( ".", cFileName ) ) == 0 .OR. SubStr( cFileName, i + 1, 1 ) < "A"
          MsgStop( "Wrong mask" )
-         _OOHG_ErrorLevel := 2
+         ErrorLevel( 2 )
          RETURN
       ENDIF
 
